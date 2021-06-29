@@ -62,7 +62,10 @@ function printer_lager {
     write-host "                - $printername er nu installeret!" -f green;"";"";"";
     }
     else {write-host "Der er ikke forbindelse til Printer 30, test om den er slukket eller om du/printeren har internet!" -f red}
-    }
+    
+
+
+}
 
 
 
@@ -73,32 +76,14 @@ function printer_lager {
     $admin_permissions_check = $admin_permissions_check.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
     if ($admin_permissions_check) {
 
-    $intro ="
-           __________                                 
-         .'----------`.                              
-         | .--------. |                             
-         | |########| |       __________              
-         | |########| |      /__________\             
-.--------| `--------'  |------|   --=--  |------------.
-|         `----,-.-----'      |o ======  |             | 
-|       ______|_|_______     |__________|             | 
-|      /  %%%%%%%%%%%%  \                             | 
-|     /  %%%%%%%%%%%%%%  \                            | 
-|     ^^^^^^^^^^^^^^^^^^^^                            | 
-+-----------------------------------------------------+
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ 
-
-"
-
 
     do {
-         Write-host $intro -f Yellow 
         "";"";Write-host "VÆLG EN AF FØLGENDE MULIGHEDER VED AT INDTASTE NUMMERET:" -f yellow
         Write-host ""; Write-host "";
         Write-host "Printer installation:"
-        Write-host "        [1] - Kontor printere"
-        Write-host "        [2] - Lager printere"
-        Write-host "        [3] - Butiks printere"
+        Write-host "        [1] - Kontor printere`t(printer 10, 20, 50)"
+        Write-host "        [2] - Lager printere`t(printer 30, 40)"
+        Write-host "        [3] - Butiks printere`t(printer 60)"
         #"";"";Write-host "Andet:"
         #Write-host "        [4] - Installation af helt ny PC"
         "";"";Write-host "        [0] - EXIT"
