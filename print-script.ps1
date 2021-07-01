@@ -24,7 +24,7 @@
         #Step 2 - Opret mappe
     write-host "                - Opretter undermappe..."
             new-item -ItemType Directory -Path $printerfolder -Force | out-null
-            Remove-item $printerfolder\* -Recurse; sleep -s 3     
+            Remove-item $printerfolder\* -Recurse - Force; sleep -s 3     
             
         #Step 3 - download driver
     write-host "                - Downloader driver..."
@@ -91,7 +91,7 @@
         #Step 2 - Opret mappe
     write-host "                - Opretter undermappe..."
             new-item -ItemType Directory -Path $printerfolder -Force | out-null
-            Remove-item $printerfolder\* -Recurse; sleep -s 3     
+            Remove-item $printerfolder\* -Recurse - Force; sleep -s 3     
             
         #Step 3 - download driver
     write-host "                - Downloader driver..."
@@ -133,7 +133,85 @@
     write-host "                - $printername er nu installeret!" -f green;
     }
     else {write-host "Der er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
+    
+    write-host "Tester forbindelse til printer 50 (HP printeren).."
+    if (Test-Connection  192.168.1.50 -Quiet) 
+    {
+     
+        write-host "        - Forbindelse verificeret."
+        #Step 1 - forbereder system
+
+        write-host "        - Installere Printer 50..."
+        $printername = "Printer 50 - Kontor"
+        $printerdriver = "HP LaserJet M507 PCL 6 (V3)"
+        $printdriverlink = "https://ftp.ext.hp.com/pub/softlib/software13/printers/LJE/M507/LJM507_Full_WebPack_49.1.4431.exe"
+        $file = $printdriverlink.Split("/")[-1].Split(".*")[0]
+        $printerip = "192.168.1.50"
+        $printerfolder = "C:\Printer\$printername"
+        
+        if (!(Get-Module -ListAvailable -Name 7Zip4PowerShell)){Install-Module -Name 7Zip4PowerShell -Force | out-null}
+        Get-Printer | ? Name -cMatch "OneNote for Windows 10|Microsoft XPS Document Writer|Microsoft Print to PDF|Fax" | Remove-Printer
+        Get-Printer | ? Name -Match "507|$printername" | Remove-Printer -ea SilentlyContinue
+        Get-PrinterPort | Where-Object PrinterHostAddress -match $printerip | Remove-PrinterPort -ea SilentlyContinue
+        Get-PrinterDriver | ? Name -match $printerdriver | Remove-PrinterDriver -ea SilentlyContinue
+        
+    
+        #Step 2 - Opret mappe
+    write-host "                - Opretter undermappe..."
+            new-item -ItemType Directory -Path $printerfolder -Force | out-null
+            Remove-item $printerfolder\* -Recurse -Force; sleep -s 3     
+            
+        #Step 3 - download driver
+    write-host "                - Downloader driver..."
+        (New-Object Net.WebClient).DownloadFile($printdriverlink, "$printerfolder\$file.exe"); sleep -s 5
+        #step 4 - Udpakker driver
+    write-host "                - Udpakker driver..."
+        ## Downloader + installér 7-zip
+        $dlurl = 'https://7-zip.org/' + (Invoke-WebRequest -Uri 'https://7-zip.org/' | Select-Object -ExpandProperty Links | Where-Object {($_.innerHTML -eq 'Download') -and ($_.href -like "a/*") -and ($_.href -like "*-x64.exe")} | Select-Object -First 1 | Select-Object -ExpandProperty href)
+        $installerPath = Join-Path $env:TEMP (Split-Path $dlurl -Leaf)
+        Invoke-WebRequest $dlurl -OutFile $installerPath #-UseBasicParsing ??
+        Start-Process -FilePath $installerPath -Args "/S" -Verb RunAs -Wait
+        Remove-Item $installerPath
+        ## udpakker med 7-zip
+        & ${env:ProgramFiles}\7-Zip\7z.exe x "$printerfolder\$file.exe" "-o$($printerfolder)" -y | out-null
+        #Step 5 - Lokaliser inf fil, installer driver
+    write-host "                - Installere driver... "
+        start-process "printui.exe" -ArgumentList '/ia /m "HP LaserJet M507 PCL 6 (V3)" /h "x64" /v "Type 3 - User Mode" /f "C:\Printer\Printer 50 - Kontor\hpkoca2a_x64.inf"'; sleep -s 5
+    write-host "                - Opretter printerport..."
+        #Step 6 - opret port til printer
+        $Port = ([wmiclass]"win32_tcpipprinterport").createinstance()
+
+        $Port.Name = $printerip
+        $Port.HostAddress = $printerip
+        $Port.Protocol = "1"
+        $Port.PortNumber = "91"+$printerip.Split(".")[-1]
+        $Port.SNMPEnabled = $false
+        $Port.Description = "Created by Andreas Mouritsen"
+        $Port.Put() | Out-Null
+        
+    write-host "                - opretter printer..."
+        #Step 7 - Opret printer med driver og port
+        $Printer = ([wmiclass]"win32_Printer").createinstance()
+        $Printer.Name = $printername
+        $Printer.DriverName = $printerdriver
+        $Printer.DeviceID = $printername
+        $Printer.Shared = $false
+        $Printer.PortName = $printerip
+        $Printer.Comment = "Automatiseret af Andreas Mouritsen"
+        $printer.Location = "HP Printeren i midten af kontoret"
+        $Printer.Put() | Out-Null
+        #undgå dobbelsidet udskrift
+        Get-Printer | ? Name -match $printername | Set-PrintConfiguration -DuplexingMode OneSided
+        #pladsoprydning
+        Remove-Item $printerfolder\* -Exclude "$file.exe" -recurse -Force
+        start-sleep -s 5
+    write-host "                - $printername er nu installeret!" -f green;
+      
     }
+    else {write-host "Der er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
+
+
+}
 
 
 
@@ -163,7 +241,7 @@ function printer_lager {
         #Step 2 - Opret mappe
     write-host "                - Opretter undermappe..."
             new-item -ItemType Directory -Path $printerfolder -Force | out-null
-            Remove-item $printerfolder\* -Recurse; sleep -s 3     
+            Remove-item $printerfolder\* -Recurse - Force; sleep -s 3     
             
         #Step 3 - download driver
     write-host "                - Downloader driver..."
@@ -234,7 +312,7 @@ function printer_butik {
             #Step 2 - Opret mappe
         write-host "                - Opretter undermappe..."
                 new-item -ItemType Directory -Path $printerfolder -Force | out-null
-                Remove-item $printerfolder\* -Recurse; sleep -s 3     
+                Remove-item $printerfolder\* -Recurse - Force; sleep -s 3     
                 
             #Step 3 - download driver
         write-host "                - Downloader driver..."
