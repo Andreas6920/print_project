@@ -24,7 +24,7 @@
         #Step 2 - Opret mappe
     write-host "                - Opretter undermappe..."
             new-item -ItemType Directory -Path $printerfolder -Force | out-null
-            Remove-item $printerfolder\* -Recurse - Force; sleep -s 3     
+            Remove-item $printerfolder\* -Recurse -Force; sleep -s 3     
             
         #Step 3 - download driver
     write-host "                - Downloader driver..."
@@ -91,7 +91,7 @@
         #Step 2 - Opret mappe
     write-host "                - Opretter undermappe..."
             new-item -ItemType Directory -Path $printerfolder -Force | out-null
-            Remove-item $printerfolder\* -Recurse - Force; sleep -s 3     
+            Remove-item $printerfolder\* -Recurse -Force; sleep -s 3     
             
         #Step 3 - download driver
     write-host "                - Downloader driver..."
@@ -217,7 +217,7 @@
 
 function printer_lager {
 
-
+    
     write-host "Tester forbindelse til printer 30 (Printer ved Bentes plads).."
     if (Test-Connection  192.168.1.30 -Quiet) 
     {
@@ -241,7 +241,7 @@ function printer_lager {
         #Step 2 - Opret mappe
     write-host "                - Opretter undermappe..."
             new-item -ItemType Directory -Path $printerfolder -Force | out-null
-            Remove-item $printerfolder\* -Recurse - Force; sleep -s 3     
+            Remove-item $printerfolder\* -Recurse -Force; sleep -s 3     
             
         #Step 3 - download driver
     write-host "                - Downloader driver..."
@@ -283,7 +283,75 @@ function printer_lager {
     write-host "                - $printername er nu installeret!" -f green;
     }
     else {write-host "Der er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
+    
+    write-host "Tester forbindelse til printer 40 (Printer ved booking).."
+    if (Test-Connection  192.168.1.40 -Quiet) 
+    {
+        write-host "        - Forbindelse verificeret."
+        #Step 1 - forbereder system
+
+        write-host "        - Installere Printer 40..."
+        $printername = "Printer 40 - Kontor"
+        $printerdriver = "Brother HL-L2360D series"
+        $printdriverlink = "https://download.brother.com/welcome/dlf100988/Y14A_C1-hostm-1110.EXE"
+        $file = $printdriverlink.Split("/")[-1].Split(".*")[0]
+        $printerip = "192.168.1.40"
+        $printerfolder = "C:\Printer\$printername"
+        
+        if (!(Get-Module -ListAvailable -Name 7Zip4PowerShell)){Install-Module -Name 7Zip4PowerShell -Force | out-null}
+        Get-Printer | ? Name -cMatch "OneNote for Windows 10|Microsoft XPS Document Writer|Microsoft Print to PDF|Fax" | Remove-Printer
+        Get-Printer | ? Name -Match "2365|$printername" | Remove-Printer -ea SilentlyContinue
+        Get-PrinterPort | Where-Object PrinterHostAddress -match $printerip | Remove-PrinterPort -ea SilentlyContinue
+        Get-PrinterDriver | ? Name -match $printerdriver | Remove-PrinterDriver -ea SilentlyContinue
+    
+        #Step 2 - Opret mappe
+    write-host "                - Opretter undermappe..."
+            new-item -ItemType Directory -Path $printerfolder -Force | out-null
+            Remove-item $printerfolder\* -Recurse -Force; sleep -s 3     
+            
+        #Step 3 - download driver
+    write-host "                - Downloader driver..."
+        (New-Object Net.WebClient).DownloadFile($printdriverlink, "$printerfolder\$file.zip")
+    write-host "                - Udpakker driver..."
+        #Step 4 - udpak driver
+        Expand-7Zip -ArchiveFileName $printerfolder\$file.zip -TargetPath $printerfolder
+    write-host "                - Installere driver... "
+        #Step 5 - Lokaliser inf fil, installer driver
+        start-process "printui.exe" -ArgumentList '/ia /m "Brother HL-L2360D series" /h "x64" /v "Type 3 - User Mode" /f "C:\Printer\Printer 40 - Kontor\32_64\BROHL13A.INF"'; sleep -s 5
+    write-host "                - Opretter printerport..."
+        #Step 6 - opret port til printer
+        $Port = ([wmiclass]"win32_tcpipprinterport").createinstance()
+
+        $Port.Name = $printerip
+        $Port.HostAddress = $printerip
+        $Port.Protocol = "1"
+        $Port.PortNumber = "91"+$printerip.Split(".")[-1]
+        $Port.SNMPEnabled = $false
+        $Port.Description = "Created by Andreas Mouritsen"
+        $Port.Put() | Out-Null
+        
+    write-host "                - opretter printer..."
+        #Step 7 - Opret printer med driver og port
+        $Printer = ([wmiclass]"win32_Printer").createinstance()
+        $Printer.Name = $printername
+        $Printer.DriverName = $printerdriver
+        $Printer.DeviceID = $printername
+        $Printer.Shared = $false
+        $Printer.PortName = $printerip
+        $Printer.Comment = "Automatiseret af Andreas Mouritsen"
+        $printer.Location = "Printer ved booking"
+        $Printer.Put() | Out-Null
+        #undgå dobbelsidet udskrift
+        Get-Printer | ? Name -match $printername | Set-PrintConfiguration -DuplexingMode OneSided
+        #pladsoprydning
+        Remove-Item $printerfolder\* -Exclude "$file.zip" -recurse
+        start-sleep -s 5
+    write-host "                - $printername er nu installeret!" -f green;    
     }
+    else {write-host "Der er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}    
+
+
+}
 
 
 function printer_butik {
@@ -312,7 +380,7 @@ function printer_butik {
             #Step 2 - Opret mappe
         write-host "                - Opretter undermappe..."
                 new-item -ItemType Directory -Path $printerfolder -Force | out-null
-                Remove-item $printerfolder\* -Recurse - Force; sleep -s 3     
+                Remove-item $printerfolder\* -Recurse -Force; sleep -s 3     
                 
             #Step 3 - download driver
         write-host "                - Downloader driver..."
@@ -372,9 +440,9 @@ function printer_butik {
         "";"";Write-host "VÆLG EN AF FØLGENDE MULIGHEDER VED AT INDTASTE NUMMERET:" -f yellow
         Write-host ""; Write-host "";
         Write-host "Printer installation:"
-        Write-host "`t1  - Kontor printere`t(printer 10, 20, 50)"
-        Write-host "`t2  - Lager printere`t(printer 30, 40)"
-        Write-host "`t3  - Butiks printere`t(printer 60)"
+        Write-host "`t1  - Kontor afdeling`t(printer 10, 20, 50)"
+        Write-host "`t2  - Lager afdeling`t`t(printer 30, 40)"
+        Write-host "`t3  - Butiks afdeling`t(printer 60)"
         #"";"";Write-host "Andet:"
         #Write-host "        [4] - Installation af helt ny PC"
         "";Write-host "`t0 - EXIT"
