@@ -467,3 +467,14 @@ else {
         cls; ""; ""; ""; ""; ""; write-host $Warning_message -ForegroundColor White; ""; ""; ""; ""; ""; Start-Sleep 1; cls
     }    
 }
+
+
+
+
+
+#$path = "C:\Printer\Printer 40 - Kontor\32_64\BROHL13A.INF"
+
+#pnputil.exe -i -a "C:\Printer\Printer 40 - Kontor\32_64\BROHL13A.INF"
+#Add-PrinterDriver -Name "Brother HL-L2360D series"
+#Add-PrinterPort -Name "test123_123" -PrinterHostAddress "192.168.1.40"
+#Add-Printer -Name "Printer 40 - Lager" -PortName "test123_123" -DriverName "Brother HL-L2360D series" -PrintProcessor winprint
