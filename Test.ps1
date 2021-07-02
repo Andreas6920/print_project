@@ -41,12 +41,12 @@ write-host "`t`t- Udpakker driver"
 
 #Installer Printer
 write-host "`t`t- Konfigurer Printer:"
-write-host "`t`t`t- Driverbiblotek"
+    write-host "`t`t`t- Driverbiblotek"
     pnputil.exe -i -a $printerinf | out-null ; sleep -s 5
-write-host "`t`t`t- Driver"
+    write-host "`t`t`t- Driver"
     Add-PrinterDriver -Name $printerdriver | out-null; sleep -s 5
-write-host "`t`t`t- Printerport"
+    write-host "`t`t`t- Printerport"
     Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip -PortNumber $portnumber | out-null; sleep -s 5
-write-host "`t`t`t- Printer"
+    write-host "`t`t`t- Printer"
     Add-Printer -Name "Printer 40 - Lager" -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
-write-host "`t- Printeren er installeret!" -f Green
+    write-host "`t- Printeren er installeret!" -f Green
