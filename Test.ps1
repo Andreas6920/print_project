@@ -4,16 +4,18 @@ write-host "Tester forbindelse til printer 10 (Printer bag Lone B's plads).." -N
 write-host "`t[Forbindelse verificeret]" -f green
 write-host "`t- Installere Printer 10:"; Sleep -s 5
 
-write-host "`t`t- Forbereder system"
+write-host "`t`t- Forbereder system.."
     $printername = "Printer 40 - Lager"
-    $printerdriver = "Brother HL-L2360D series"
     $printdriverlink = "https://download.brother.com/welcome/dlf100988/Y14A_C1-hostm-1110.EXE"
-    $file = Split-Path $printdriverlink -Leaf
+    $printerinf = "C:\Printer\Printer 40 - Kontor\32_64\BROHL13A.INF"
+    $printerdriver = "Brother HL-L2360D series"
     $printerip = "192.168.1.40"
-    $printerfolder = "C:\Printer\$printername"
-    $portNumber = "91"+$printerip.Split(".")[-1]
     $printerlocation = "I skuret under urtepotterne"
-    $printerinf = "C:\Printer\Printer 40 - Kontor\32_64\BROHL13A.INF" 
+     
+    
+    $printerfolder = "C:\Printer\$printername"
+    $file = Split-Path $printdriverlink -Leaf
+    $portNumber = "91"+$printerip.Split(".")[-1]
 
     Get-Printer | ? Name -cMatch "OneNote for Windows 10|Microsoft XPS Document Writer|Microsoft Print to PDF|Fax" | Remove-Printer
     Get-Printer | ? Name -Match "2365|$printername" | Remove-Printer -ea SilentlyContinue
