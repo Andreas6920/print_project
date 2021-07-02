@@ -46,4 +46,4 @@ write-host "`t`t`t- Printerport..."
     Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip -PortNumber $portnumber | out-null; sleep -s 5
 write-host "`t`t`t- Printer..."
     Add-Printer -Name "Printer 40 - Lager" -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
-write-host "`t- Printeren er installeret" -f Green
+write-host "`t- Printeren er installeret!" -f Green
