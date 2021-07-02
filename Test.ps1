@@ -11,7 +11,6 @@ write-host "`t`t- Forbereder system.."
     $printerdriver = "Brother HL-L2360D series"
     $printerip = "192.168.1.40"
     $printerlocation = "I skuret under urtepotterne"
-     
     
     $printerfolder = "C:\Printer\$printername"
     $file = Split-Path $printdriverlink -Leaf
