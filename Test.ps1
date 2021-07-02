@@ -1,7 +1,7 @@
 ﻿cls
 #Forbereder system
-write-host "Tester forbindelse til printer 40 (Printer ved Booking-PC).." -NoNewline; Sleep -s 3
-write-host "`t[Forbindelse verificeret]" -f green
+write-host "Tester forbindelse til printer 40 (Printer ved Booking-PC).. " -NoNewline; Sleep -s 3
+write-host "[Forbindelse verificeret]".toUpper() -f green
 write-host "`t- Installere Printer 40:"; Sleep -s 5
 
 write-host "`t`t- Forbereder system.."
@@ -51,6 +51,5 @@ write-host "`t`t- Konfigurer Printer:"
     Add-Printer -Name "Printer 40 - Lager" -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
 #Oprydning
     Remove-item  -Path "$printerfolder\" -Exclude $file -Recurse -Force
-
 
 write-host "`t- Printeren er installeret!" -f Green
