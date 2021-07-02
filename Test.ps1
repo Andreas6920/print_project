@@ -38,6 +38,7 @@ write-host "`t`t- Downloader driver"
 write-host "`t`t- Udpakker driver"
     & ${env:ProgramFiles}\7-Zip\7z.exe x "$printerfolder\$file" "-o$($printerfolder)" -y | out-null; ; sleep -s 5
 
+#Installer Printer
 write-host "`t`t- Konfigurer Printer:"
 write-host "`t`t`t- Driverbiblotek"
     pnputil.exe -i -a $printerinf | out-null ; sleep -s 5
