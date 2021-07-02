@@ -2,7 +2,7 @@
 #Forbereder system
 write-host "Tester forbindelse til printer 40 (Printer ved Booking-PC).. " -NoNewline; Sleep -s 3
 write-host "[Forbindelse verificeret]".toUpper() -f green
-write-host "`t- Installere Printer 40:"; Sleep -s 5
+write-host "`t- Begynder installation af Printer 40:"; Sleep -s 5
 
 write-host "`t`t- Forbereder system.."
     $printername = "Printer 40 - Lager"
@@ -31,23 +31,23 @@ write-host "`t`t- Forbereder system.."
     new-item -ItemType Directory -Path $printerfolder -Force | out-null
 
 #Downloader driver
-write-host "`t`t- Downloader driver"
+write-host "`t`t- Downloader driver.."
     Remove-item -Path $printerfolder\* -Force -recurse | out-null
     (New-Object Net.WebClient).DownloadFile($printdriverlink, "$printerfolder\$file")
 
 #Udpakker driver
-write-host "`t`t- Udpakker driver"
+write-host "`t`t- Udpakker driver.."
     & ${env:ProgramFiles}\7-Zip\7z.exe x "$printerfolder\$file" "-o$($printerfolder)" -y | out-null; ; sleep -s 5
 
 #Installer Printer
-write-host "`t`t- Konfigurer Printer:"
-    write-host "`t`t`t- Driverbiblotek"
+write-host "`t`t- Konfigurer Printer:"; sleep -s 5
+    write-host "`t`t`t`t- Driverbiblotek"
     pnputil.exe -i -a $printerinf | out-null ; sleep -s 5
-    write-host "`t`t`t- Driver"
+    write-host "`t`t`t`t- Driver"
     Add-PrinterDriver -Name $printerdriver | out-null; sleep -s 5
-    write-host "`t`t`t- Printerport"
+    write-host "`t`t`t`t- Printerport"
     Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip -PortNumber $portnumber | out-null; sleep -s 5
-    write-host "`t`t`t- Printer"
+    write-host "`t`t`t`t- Printer"
     Add-Printer -Name "Printer 40 - Lager" -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
 #Oprydning
     Remove-item  -Path "$printerfolder\" -Exclude $file -Recurse -Force
