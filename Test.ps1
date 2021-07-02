@@ -17,7 +17,7 @@ write-host "`t`t- Forbereder system.."
     $portNumber = "91"+$printerip.Split(".")[-1]
 
     Stop-Service "Spooler"
-    Remove-Item "C:\Windows\System32\spool\PRINTERS\*.*"
+    Remove-Item "C:\Windows\System32\spool\PRINTERS\*.*" -Force | Out-Null
     Start-Service "Spooler"
 
     Get-Printer | ? Name -cMatch "OneNote for Windows 10|Microsoft XPS Document Writer|Microsoft Print to PDF|Fax" | Remove-Printer
