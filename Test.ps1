@@ -16,6 +16,10 @@ write-host "`t`t- Forbereder system.."
     $file = Split-Path $printdriverlink -Leaf
     $portNumber = "91"+$printerip.Split(".")[-1]
 
+    Stop-Service "Spooler"
+    Remove-Item "C:\Windows\System32\spool\PRINTERS\*.*"
+    Start-Service "Spooler"
+
     Get-Printer | ? Name -cMatch "OneNote for Windows 10|Microsoft XPS Document Writer|Microsoft Print to PDF|Fax" | Remove-Printer
     Get-Printer | ? Name -Match "2365|$printername" | Remove-Printer -ea SilentlyContinue
     Get-PrinterPort | ? Name -match "192.168.1.40" | Remove-PrinterPort -ea SilentlyContinue
@@ -48,7 +52,7 @@ write-host "`t`t- Konfigurer Printer:"; sleep -s 5
     write-host "`t`t`t`t- Printerport"
     Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip -PortNumber $portnumber | out-null; sleep -s 5
     write-host "`t`t`t`t- Printer"
-    Add-Printer -Name "Printer 40 - Lager" -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
+    Add-Printer -Name $printername -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
 #Oprydning
     Remove-item  -Path "$printerfolder\" -Exclude $file -Recurse -Force
 
