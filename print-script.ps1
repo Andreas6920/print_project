@@ -34,7 +34,7 @@
         Expand-7Zip -ArchiveFileName $printerfolder\$file.zip -TargetPath $printerfolder
     write-host "                - Installere driver..."
         #Step 5 - Lokaliser inf fil, installer driver
-        start-process "printui.exe" -ArgumentList '/ia /m "ES4132(PCL6)" /h "x64" /v "Type 3 - User Mode" /f "C:\Printer\Printer 10 - Kontor\OKW3X055114\Driver\OKW3X055.INF"'; sleep -s 5
+        start-process "printui.exe" -ArgumentList '/ia /m "ES4132(PCL6)" /h "x64" /v "Type 3 - User Mode" /f "C:\Printer\Printer 10 - Kontor\OKW3X055114\Driver\OKW3X055.INF"';
     write-host "                - Opretter printerport..."
         #Step 6 - opret port til printer
         $Port = ([wmiclass]"win32_tcpipprinterport").createinstance()
@@ -101,7 +101,7 @@
         Expand-7Zip -ArchiveFileName $printerfolder\$file.zip -TargetPath $printerfolder
     write-host "                - Installere driver..."
         #Step 5 - Lokaliser inf fil, installer driver
-        start-process "printui.exe" -ArgumentList '/ia /m "Canon Generic Plus PCL6" /h "x64" /v "Type 3 - User Mode" /f "C:\Printer\Printer 20 - Kontor\intdrv\PCL6\x64\Driver\Cnp60MA64.INF"'; sleep -s 5
+        start-process "printui.exe" -ArgumentList '/ia /m "Canon Generic Plus PCL6" /h "x64" /v "Type 3 - User Mode" /f "C:\Printer\Printer 20 - Kontor\intdrv\PCL6\x64\Driver\Cnp60MA64.INF"';
     write-host "                - Opretter printerport..."
         #Step 6 - opret port til printer
         $Port = ([wmiclass]"win32_tcpipprinterport").createinstance()
@@ -163,20 +163,21 @@
             
         #Step 3 - download driver
     write-host "                - Downloader driver..."
-        (New-Object Net.WebClient).DownloadFile($printdriverlink, "$printerfolder\$file.exe"); sleep -s 5
+        (New-Object Net.WebClient).DownloadFile($printdriverlink, "$printerfolder\$file.exe");
         #step 4 - Udpakker driver
     write-host "                - Udpakker driver..."
         ## Downloader + installér 7-zip
-        $dlurl = 'https://7-zip.org/' + (Invoke-WebRequest -Uri 'https://7-zip.org/' | Select-Object -ExpandProperty Links | Where-Object {($_.innerHTML -eq 'Download') -and ($_.href -like "a/*") -and ($_.href -like "*-x64.exe")} | Select-Object -First 1 | Select-Object -ExpandProperty href)
-        $installerPath = Join-Path $env:TEMP (Split-Path $dlurl -Leaf)
-        Invoke-WebRequest $dlurl -OutFile $installerPath #-UseBasicParsing ??
-        Start-Process -FilePath $installerPath -Args "/S" -Verb RunAs -Wait
-        Remove-Item $installerPath
+        if(!(Test-Path "$env:ProgramFiles\7-Zip\7z.exe")){
+            $dlurl = 'https://7-zip.org/' + (Invoke-WebRequest -Uri 'https://7-zip.org/' | Select-Object -ExpandProperty Links | Where-Object {($_.innerHTML -eq 'Download') -and ($_.href -like "a/*") -and ($_.href -like "*-x64.exe")} | Select-Object -First 1 | Select-Object -ExpandProperty href)
+            $installerPath = Join-Path $env:TEMP (Split-Path $dlurl -Leaf)
+            Invoke-WebRequest $dlurl -OutFile $installerPath -UseBasicParsing
+            Start-Process -FilePath $installerPath -Args "/S" -Verb RunAs -Wait
+            Remove-Item $installerPath} 
         ## udpakker med 7-zip
         & ${env:ProgramFiles}\7-Zip\7z.exe x "$printerfolder\$file.exe" "-o$($printerfolder)" -y | out-null
         #Step 5 - Lokaliser inf fil, installer driver
     write-host "                - Installere driver..."
-        start-process "printui.exe" -ArgumentList '/ia /m "HP LaserJet M507 PCL 6 (V3)" /h "x64" /v "Type 3 - User Mode" /f "C:\Printer\Printer 50 - Kontor\hpkoca2a_x64.inf"'; sleep -s 5
+        start-process "printui.exe" -ArgumentList '/ia /m "HP LaserJet M507 PCL 6 (V3)" /h "x64" /v "Type 3 - User Mode" /f "C:\Printer\Printer 50 - Kontor\hpkoca2a_x64.inf"';
     write-host "                - Opretter printerport..."
         #Step 6 - opret port til printer
         $Port = ([wmiclass]"win32_tcpipprinterport").createinstance()
@@ -245,13 +246,13 @@ function printer_lager {
             
         #Step 3 - download driver
     write-host "                - Downloader driver..."
-        (New-Object Net.WebClient).DownloadFile($printdriverlink, "$printerfolder\$file.zip"); sleep -s 5
+        (New-Object Net.WebClient).DownloadFile($printdriverlink, "$printerfolder\$file.zip");
     write-host "                - Udpakker driver..."
         #Step 4 - udpak driver
         Expand-7Zip -ArchiveFileName $printerfolder\$file.zip -TargetPath $printerfolder
     write-host "                - Installere driver..."
         #Step 5 - Lokaliser inf fil, installer driver
-        start-process "printui.exe" -ArgumentList '/ia /m "Brother MFC-9330CDW Printer" /h "x64" /v "Type 3 - User Mode" /f "C:\Printer\Printer 30 - Lager\install\driver\gdi\32_64\BRPRC12A.INF"'; sleep -s 5
+        start-process "printui.exe" -ArgumentList '/ia /m "Brother MFC-9330CDW Printer" /h "x64" /v "Type 3 - User Mode" /f "C:\Printer\Printer 30 - Lager\install\driver\gdi\32_64\BRPRC12A.INF"';
     write-host "                - Opretter printerport..."
         #Step 6 - opret port til printer
         $Port = ([wmiclass]"win32_tcpipprinterport").createinstance()
@@ -317,7 +318,7 @@ function printer_lager {
         Expand-7Zip -ArchiveFileName $printerfolder\$file.zip -TargetPath $printerfolder
     #write-host "                - Installere driver..."
         #Step 5 - Lokaliser inf fil, installer driver
-        start-process "printui.exe" -ArgumentList '/ia /m "Brother HL-L2360D series" /h "x64" /v "Type 3 - User Mode" /f "C:\Printer\Printer 40 - Kontor\32_64\BROHL13A.INF"'; sleep -s 5
+        start-process "printui.exe" -ArgumentList '/ia /m "Brother HL-L2360D series" /h "x64" /v "Type 3 - User Mode" /f "C:\Printer\Printer 40 - Kontor\32_64\BROHL13A.INF"';
     #write-host "                - Opretter printerport..."
         #Step 6 - opret port til printer
         #$Port = ([wmiclass]"win32_tcpipprinterport").createinstance()
@@ -345,17 +346,17 @@ function printer_lager {
 
     #ny-test    
         write-host "                - pnputil..."
-        pnputil.exe -i -a "C:\Printer\Printer 40 - Kontor\32_64\BROHL13A.INF" | Out-Null; Sleep -s 5
+        pnputil.exe -i -a "C:\Printer\Printer 40 - Kontor\32_64\BROHL13A.INF" | Out-Null;
         write-host "                - add-printerdriver..."
-        Add-PrinterDriver -Name "Brother HL-L2360D series"  | Out-Null; Sleep -s 5
+        Add-PrinterDriver -Name "Brother HL-L2360D series"  | Out-Null;
         write-host "                - add-printerport..."
-        Add-PrinterPort -Name "192.168.1.40" -PrinterHostAddress "192.168.1.40" | Out-Null; Sleep -s 5
+        Add-PrinterPort -Name "192.168.1.40" -PrinterHostAddress "192.168.1.40" | Out-Null;
         write-host "                - add-printer..."
-        Add-Printer -Name "Printer 40 - Lager" -PortName "192.168.1.40" -DriverName "Brother HL-L2360D series" -PrintProcessor winprint | Out-Null; Sleep -s 5
+        Add-Printer -Name "Printer 40 - Lager" -PortName "192.168.1.40" -DriverName "Brother HL-L2360D series" -PrintProcessor winprint | Out-Null;
 
         Get-Printer | ? Name -match $printername | Set-PrintConfiguration -DuplexingMode OneSided
         #pladsoprydning
-        Remove-Item $printerfolder\* -Exclude "$file.zip" -recurse; sleep -s 5
+        Remove-Item $printerfolder\* -Exclude "$file.zip" -recurse;
     write-host "                - $printername er nu installeret!" -f green;    
     }
     else {write-host "Der er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}    
@@ -394,13 +395,13 @@ function printer_butik {
                 
             #Step 3 - download driver
         write-host "                - Downloader driver..."
-            (New-Object Net.WebClient).DownloadFile($printdriverlink, "$printerfolder\$file.zip"); sleep -s 5
+            (New-Object Net.WebClient).DownloadFile($printdriverlink, "$printerfolder\$file.zip");
         write-host "                - Udpakker driver..."
             #Step 4 - udpak driver
-            Expand-7Zip -ArchiveFileName $printerfolder\$file.zip -TargetPath $printerfolder; sleep -s 5
+            Expand-7Zip -ArchiveFileName $printerfolder\$file.zip -TargetPath $printerfolder;
         write-host "                - Installere driver..."
             #Step 5 - Lokaliser inf fil, installer driver
-            start-process "printui.exe" -ArgumentList '/ia /m "ES7131(PCL6)" /h "x64" /v "Type 3 - User Mode" /f "C:\Printer\Printer 60 - Butik\OKW3X04V101\driver\OKW3X04V.INF"'; sleep -s 5
+            start-process "printui.exe" -ArgumentList '/ia /m "ES7131(PCL6)" /h "x64" /v "Type 3 - User Mode" /f "C:\Printer\Printer 60 - Butik\OKW3X04V101\driver\OKW3X04V.INF"';
         write-host "                - Opretter printerport..."
             #Step 6 - opret port til printer
             $Port = ([wmiclass]"win32_tcpipprinterport").createinstance()
