@@ -59,7 +59,7 @@
         $printer.Location = "Printer bag Lone B's bord"
         $Printer.Put() | Out-Null
         #undgå dobbelsidet udskrift
-        Get-Printer | ? Name -match $printername | Set-PrintConfiguration -DuplexingMode OneSided
+        Get-Printer | ? Name -match "Printer \d\d - " | Set-PrintConfiguration -DuplexingMode OneSided;
         #pladsoprydning
         Remove-Item $printerfolder\* -Exclude "$file.zip" -recurse
         start-sleep -s 5
@@ -126,7 +126,7 @@
         $printer.Location = "Den canon printer med scanner"
         $Printer.Put() | Out-Null
         #undgå dobbelsidet udskrift
-        Get-Printer | ? Name -match $printername | Set-PrintConfiguration -DuplexingMode OneSided
+        Get-Printer | ? Name -match "Printer \d\d - " | Set-PrintConfiguration -DuplexingMode OneSided;
         #pladsoprydning
         Remove-Item $printerfolder\* -Exclude "$file.zip" -recurse
         start-sleep -s 5
@@ -202,7 +202,7 @@
         $printer.Location = "HP Printeren i midten af kontoret"
         $Printer.Put() | Out-Null
         #undgå dobbelsidet udskrift
-        Get-Printer | ? Name -match $printername | Set-PrintConfiguration -DuplexingMode OneSided
+        Get-Printer | ? Name -match "Printer \d\d - " | Set-PrintConfiguration -DuplexingMode OneSided;
         #pladsoprydning
         Remove-Item $printerfolder\* -Exclude "$file.exe" -recurse -Force
         start-sleep -s 5
@@ -277,7 +277,7 @@ function printer_lager {
         $printer.Location = "Bentes' printer"
         $Printer.Put() | Out-Null
         #undgå dobbelsidet udskrift
-        Get-Printer | ? Name -match $printername | Set-PrintConfiguration -DuplexingMode OneSided
+        Get-Printer | ? Name -match "Printer \d\d - " | Set-PrintConfiguration -DuplexingMode OneSided;
         #pladsoprydning
         Remove-Item $printerfolder\* -Exclude "$file.zip" -recurse
         start-sleep -s 5
@@ -354,7 +354,7 @@ function printer_lager {
         write-host "                - add-printer..."
         Add-Printer -Name "Printer 40 - Lager" -PortName "192.168.1.40" -DriverName "Brother HL-L2360D series" -PrintProcessor winprint | Out-Null;
 
-        Get-Printer | ? Name -match $printername | Set-PrintConfiguration -DuplexingMode OneSided
+        Get-Printer | ? Name -match "Printer \d\d - " | Set-PrintConfiguration -DuplexingMode OneSided;
         #pladsoprydning
         Remove-Item $printerfolder\* -Exclude "$file.zip" -recurse;
     write-host "                - $printername er nu installeret!" -f green;    
@@ -426,7 +426,7 @@ function printer_butik {
             $printer.Location = "printeren ved kassen"
             $Printer.Put() | Out-Null
             #undgå dobbelsidet udskrift
-            Get-Printer | ? Name -match $printername | Set-PrintConfiguration -DuplexingMode OneSided
+            Get-Printer | ? Name -match "Printer \d\d - " | Set-PrintConfiguration -DuplexingMode OneSided;
             #pladsoprydning
             Remove-Item $printerfolder\* -Exclude "$file.zip" -recurse
             start-sleep -s 5
@@ -478,12 +478,3 @@ else {
         cls; ""; ""; ""; ""; ""; write-host $Warning_message -ForegroundColor White; ""; ""; ""; ""; ""; Start-Sleep 1; cls
     }    
 }
-
-
-
-
-
-#$path = "C:\Printer\Printer 40 - Kontor\32_64\BROHL13A.INF"
-#pnputil.exe -i -a "C:\Printer\Printer 40 - Kontor\32_64\BROHL13A.INF"; Add-PrinterDriver -Name "Brother HL-L2360D series" -wait
-#Add-PrinterPort -Name "test123_123" -PrinterHostAddress "192.168.1.40"
-#Add-Printer -Name "Printer 40 - Lager" -PortName "test123_123" -DriverName "Brother HL-L2360D series" -PrintProcessor winprint
