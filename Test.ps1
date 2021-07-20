@@ -8,10 +8,10 @@ if (Test-Connection  192.168.1.40 -Quiet) {
     write-host "`t`t- Forbereder system.."
         $printername = "Printer 40 - Lager"
         $printdriverlink = "https://download.brother.com/welcome/dlf100988/Y14A_C1-hostm-1110.EXE"
-        $printerinf = "C:\Printer\Printer 40 - Kontor\32_64\BROHL13A.INF"
+        $printerinf = "C:\Printer\Printer 40 - Lager\32_64\BROHL13A.INF"
         $printerdriver = "Brother HL-L2360D series"
         $printerip = "192.168.1.40"
-        $printerlocation = "I skuret under urtepotterne"
+        $printerlocation = "Printer ved Booking-PC"
     
         $printerfolder = "C:\Printer\$printername"
         $file = Split-Path $printdriverlink -Leaf
@@ -21,11 +21,15 @@ if (Test-Connection  192.168.1.40 -Quiet) {
         Remove-Item "C:\Windows\System32\spool\PRINTERS\*.*" -Force | Out-Null
         Start-Service "Spooler"
 
+        # deaktiver automatisk installation af netværksprintere
+        if((get-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private" | Select-Object -ExpandProperty AutoSetup) -ne 0)
+        {Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private" -Name "AutoSetup" -Type DWord -Value 0}
+        # fjerner allerede installerede printere
         Get-Printer | ? Name -cMatch "OneNote for Windows 10|Microsoft XPS Document Writer|Microsoft Print to PDF|Fax" | Remove-Printer
         Get-Printer | ? Name -Match "2365|$printername" | Remove-Printer -ea SilentlyContinue
         Get-PrinterPort | ? Name -match "192.168.1.40" | Remove-PrinterPort -ea SilentlyContinue
         Get-PrinterDriver | ? Name -match $printerdriver | Remove-PrinterDriver -ea SilentlyContinue
-
+        # installér 7-zip hvis den ikke allerede er installeret. bruges til stabil driver udpakning.
         if(!(Test-Path "$env:ProgramFiles\7-Zip\7z.exe")){
             $dlurl = 'https://7-zip.org/' + (Invoke-WebRequest -Uri 'https://7-zip.org/' | Select-Object -ExpandProperty Links | Where-Object {($_.innerHTML -eq 'Download') -and ($_.href -like "a/*") -and ($_.href -like "*-x64.exe")} | Select-Object -First 1 | Select-Object -ExpandProperty href)
             $installerPath = Join-Path $env:TEMP (Split-Path $dlurl -Leaf)
@@ -58,4 +62,4 @@ if (Test-Connection  192.168.1.40 -Quiet) {
         Remove-item  -Path "$printerfolder\" -Exclude $file -Recurse -Force
 
     write-host "`t- Printeren er installeret!" -f Green
-}else {write-host "[ingen forbindelse]".toUpper() -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
+}else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
