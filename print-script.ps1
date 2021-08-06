@@ -441,6 +441,7 @@ function printer_lager {
 
 
     do {
+        cls
         "";"";Write-host "VÆLG EN AF FØLGENDE MULIGHEDER VED AT INDTASTE NUMMERET:" -f yellow
         Write-host ""; Write-host "";
         Write-host "Printer installation:"
@@ -460,7 +461,7 @@ function printer_lager {
             3 {printer_butik;}
         }}
     
-    while ($option -lt 3 )
+    while ($option -notin 1..3 )
                             }
 
 else {
