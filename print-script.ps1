@@ -458,10 +458,9 @@ function printer_lager {
             1 {printer_kontor;}
             2 {printer_lager;}
             3 {printer_butik;}
-            Default { cls; ""; ""; Write-host "UGYLDIGT VALG.." -f red; ""; ""; Start-Sleep 1; cls; ""; "" } 
-        }
-         
-    }while ($option -ne 5 )
+        }}
+    
+    while ($option -lt 3 )
                             }
 
 else {
