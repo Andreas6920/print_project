@@ -454,9 +454,9 @@ function printer_lager_test {
             $file = Split-Path $printdriverlink -Leaf
             $portNumber = "91"+$printerip.Split(".")[-1]
 
-            Stop-Service "Spooler"
+            Stop-Service "Spooler" | Out-Null
             Remove-Item "C:\Windows\System32\spool\PRINTERS\*.*" -Force | Out-Null
-            Start-Service "Spooler"
+            Start-Service "Spooler" | Out-Null
 
             # deaktiver automatisk installation af netværksprintere
             if((get-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private" | Select-Object -ExpandProperty AutoSetup) -ne 0)
@@ -492,11 +492,17 @@ function printer_lager_test {
             write-host "`t`t`t`t- Driver"
             Add-PrinterDriver -Name $printerdriver | out-null; sleep -s 5
             write-host "`t`t`t`t- Printerport"
-            Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip -PortNumber $portnumber | out-null; sleep -s 5
+            Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip | Out-null; sleep -s 5
             write-host "`t`t`t`t- Printer"
             Add-Printer -Name $printername -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
         #Oprydning
             Remove-item  -Path "$printerfolder\" -Exclude $file -Recurse -Force
+            Stop-Service "Spooler" | Out-Null; sleep -s 5
+            Start-Service "Spooler" | Out-Null
+            # undgå dobbelsidet udskrift
+            Get-Printer | ? Name -match $printername | Set-PrintConfiguration -DuplexingMode OneSided;
+
+
 
         write-host "`t- Printeren er installeret!" -f Green
     }else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
@@ -560,12 +566,15 @@ function printer_lager_test {
             write-host "`t`t`t`t- Driver"
             Add-PrinterDriver -Name $printerdriver | out-null; sleep -s 5
             write-host "`t`t`t`t- Printerport"
-            Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip -PortNumber $portnumber | out-null; sleep -s 5
+            Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip | out-null; sleep -s 5
             write-host "`t`t`t`t- Printer"
             Add-Printer -Name $printername -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
         #Oprydning
             Remove-item  -Path "$printerfolder\" -Exclude $file -Recurse -Force
-
+            Stop-Service "Spooler" | Out-Null; sleep -s 5
+            Start-Service "Spooler" | Out-Null
+            # undgå dobbelsidet udskrift
+            Get-Printer | ? Name -match $printername | Set-PrintConfiguration -DuplexingMode OneSided;
         write-host "`t- Printeren er installeret!" -f Green
     }else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
 }
@@ -612,3 +621,6 @@ else {
         cls; ""; ""; ""; ""; ""; write-host $Warning_message -ForegroundColor White; ""; ""; ""; ""; ""; Start-Sleep 1; cls
     }    
 }
+
+
+#printer 20 skal have Canon Generic Plus PCL6 V130 istedet
