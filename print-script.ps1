@@ -288,7 +288,7 @@ function printer_butik {
 }
     
 function printer_lager {
-    #Forbereder system
+    
     write-host "Tester forbindelse til printer 30 (Printer ved Lones bord).. " -NoNewline; Sleep -s 3
     if (Test-Connection  192.168.1.30 -Quiet) {
         write-host "[Forbindelse verificeret]".toUpper() -f green
@@ -356,9 +356,9 @@ function printer_lager {
             Get-Printer | ? Name -match $printername | Set-PrintConfiguration -DuplexingMode OneSided;
         write-host "`t- Printeren er installeret!" -f Green
     }else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
-            #Forbereder system
-            write-host "Tester forbindelse til printer 40 (Printer ved Booking-PC).. " -NoNewline; Sleep -s 3
-            if (Test-Connection  192.168.1.40 -Quiet) {
+    
+    write-host "Tester forbindelse til printer 40 (Printer ved Booking-PC).. " -NoNewline; Sleep -s 3
+    if (Test-Connection  192.168.1.40 -Quiet) {
                 write-host "[Forbindelse verificeret]".toUpper() -f green
                 write-host "`t- Begynder installation af Printer 40:"; Sleep -s 5
         
@@ -425,7 +425,9 @@ function printer_lager {
         
         
                 write-host "`t- Printeren er installeret!" -f Green
-            }else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
+    }else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
+
+
 }
         
        
