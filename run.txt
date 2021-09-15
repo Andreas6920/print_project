@@ -1,1 +1,0 @@
-(New-Object System.Net.WebClient).DownloadFile("https://raw.githubusercontent.com/Andreas6920/print_project/main/print-script.ps1","$env:ProgramData\print_script.ps1"); cls; powershell -ep bypass "$env:ProgramData\print_script.ps1"
