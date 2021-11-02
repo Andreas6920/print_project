@@ -1,73 +1,73 @@
 ﻿function printer_kontor {
-
-    write-host "Tester forbindelse til printer 10 (Printer ved Lones bord).. " -NoNewline; Sleep -s 3
-    if (Test-Connection  192.168.1.10 -Quiet) {
-        write-host "[Forbindelse verificeret]".toUpper() -f green
-        write-host "`t- Begynder installation af Printer 10:"; Sleep -s 5
-
-        write-host "`t`t- Forbereder system.."
-            $printername = "Printer 10 - Kontor"
-            $printdriverlink = "https://www.oki.com/be/printing/en/download/OKW3X055114_254753.exe"
-            $printerinf = "$env:SystemDrive\Printer\Printer 10 - Kontor\OKW3X055114\Driver\OKW3X055.INF"
-            $printerdriver = "ES4132(PCL6)"
-            $printerip = "192.168.1.10"
-            $printerlocation = "Printer bag Lone B's bord"
-            
-            $printerfolder = "$env:SystemDrive\Printer\$printername"
-            $file = Split-Path $printdriverlink -Leaf
-
-            # renser spooler
-            Stop-Service "Spooler" | out-null; sleep -s 3
-            Remove-Item "$env:SystemRoot\System32\spool\PRINTERS\*.*" -Force | Out-Null
-            Start-Service "Spooler"
-
-            # deaktiver automatisk installation af netværksprintere
-            if (!(Test-Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private")) {
-                New-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private" -Force | Out-Null}
-                Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private" -Name "AutoSetup" -Type DWord -Value 0
-
-            # fjerner allerede installerede printere
-            Get-Printer | ? Name -cMatch "OneNote (Desktop)|OneNote for Windows 10|Microsoft XPS Document Writer|Microsoft Print to PDF|Fax" | Remove-Printer 
-            Get-Printer | ? Name -Match "9310|$printername" | Remove-Printer -ea SilentlyContinue
-            Get-PrinterPort | ? Name -match $printerip | Remove-PrinterPort -ea SilentlyContinue
-            Get-PrinterDriver | ? Name -match $printerdriver | Remove-PrinterDriver -ea SilentlyContinue
-            # installér 7-zip hvis den ikke allerede er installeret. bruges til stabil driver udpakning.
-            if(!(Test-Path "$env:ProgramFiles\7-Zip\7z.exe")){
-                $dlurl = 'https://7-zip.org/' + (Invoke-WebRequest -Uri 'https://7-zip.org/' | Select-Object -ExpandProperty Links | Where-Object {($_.innerHTML -eq 'Download') -and ($_.href -like "a/*") -and ($_.href -like "*-x64.exe")} | Select-Object -First 1 | Select-Object -ExpandProperty href)
-                $installerPath = Join-Path $env:TEMP (Split-Path $dlurl -Leaf)
-                Invoke-WebRequest $dlurl -OutFile $installerPath -UseBasicParsing
-                Start-Process -FilePath $installerPath -Args "/S" -Verb RunAs -Wait
-                Remove-Item $installerPath} 
-
-            new-item -ItemType Directory -Path $printerfolder -Force | out-null
-
-        #Downloader driver
-        write-host "`t`t- Downloader driver.."
-            Remove-item -Path $printerfolder\* -Force -recurse | out-null
-            (New-Object Net.WebClient).DownloadFile($printdriverlink, "$printerfolder\$file")
-
-        #Udpakker driver
-        write-host "`t`t- Udpakker driver.."
-            & ${env:ProgramFiles}\7-Zip\7z.exe x "$printerfolder\$file" "-o$($printerfolder)" -y | out-null; ; sleep -s 5
-
-        #Installer Printer
-        write-host "`t`t- Konfigurer Printer:"; sleep -s 5
-            write-host "`t`t`t`t- Driverbiblotek"
-            pnputil.exe -i -a $printerinf | out-null ; sleep -s 5
-            write-host "`t`t`t`t- Driver"
-            Add-PrinterDriver -Name $printerdriver | out-null; sleep -s 5
-            write-host "`t`t`t`t- Printerport"
-            Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip | out-null; sleep -s 5
-            write-host "`t`t`t`t- Printer"
-            Add-Printer -Name $printername -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
-        #Oprydning
-            Remove-item  -Path "$printerfolder\" -Exclude $file -Recurse -Force
-            Stop-Service "Spooler" | Out-Null; sleep -s 5
-            Start-Service "Spooler" | Out-Null
-            # undgå dobbelsidet udskrift
-            Get-Printer | ? Name -match $printername | Set-PrintConfiguration -DuplexingMode OneSided;
-        write-host "`t- Printeren er installeret!" -f Green
-    }else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
+    write-host "`t- Printer 10 har opdateret driver. Kommer snart."; Sleep -s 5
+#    write-host "Tester forbindelse til printer 10 (Printer ved Lones bord).. " -NoNewline; Sleep -s 3
+#    if (Test-Connection  192.168.1.10 -Quiet) {
+#        write-host "[Forbindelse verificeret]".toUpper() -f green
+#        write-host "`t- Begynder installation af Printer 10:"; Sleep -s 5
+#
+#        write-host "`t`t- Forbereder system.."
+#            $printername = "Printer 10 - Kontor"
+#            $printdriverlink = "https://www.oki.com/be/printing/en/download/OKW3X055114_254753.exe"
+#            $printerinf = "$env:SystemDrive\Printer\Printer 10 - Kontor\OKW3X055114\Driver\OKW3X055.INF"
+#            $printerdriver = "ES4132(PCL6)"
+#            $printerip = "192.168.1.10"
+#            $printerlocation = "Printer bag Lone B's bord"
+#            
+#            $printerfolder = "$env:SystemDrive\Printer\$printername"
+#            $file = Split-Path $printdriverlink -Leaf
+#
+#            # renser spooler
+#            Stop-Service "Spooler" | out-null; sleep -s 3
+#            Remove-Item "$env:SystemRoot\System32\spool\PRINTERS\*.*" -Force | Out-Null
+#            Start-Service "Spooler"
+#
+#            # deaktiver automatisk installation af netværksprintere
+#            if (!(Test-Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private")) {
+#                New-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private" -Force | Out-Null}
+#                Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private" -Name "AutoSetup" -Type DWord -Value 0
+#
+#            # fjerner allerede installerede printere
+#            Get-Printer | ? Name -cMatch "OneNote (Desktop)|OneNote for Windows 10|Microsoft XPS Document Writer|Microsoft Print to PDF|Fax" | Remove-Printer 
+#            Get-Printer | ? Name -Match "9310|$printername" | Remove-Printer -ea SilentlyContinue
+#            Get-PrinterPort | ? Name -match $printerip | Remove-PrinterPort -ea SilentlyContinue
+#            Get-PrinterDriver | ? Name -match $printerdriver | Remove-PrinterDriver -ea SilentlyContinue
+#            # installér 7-zip hvis den ikke allerede er installeret. bruges til stabil driver udpakning.
+#            if(!(Test-Path "$env:ProgramFiles\7-Zip\7z.exe")){
+#                $dlurl = 'https://7-zip.org/' + (Invoke-WebRequest -Uri 'https://7-zip.org/' | Select-Object -ExpandProperty Links | Where-Object {($_.innerHTML -eq 'Download') -and ($_.href -like "a/*") -and ($_.href -like "*-x64.exe")} | Select-Object -First 1 | Select-Object -ExpandProperty href)
+#                $installerPath = Join-Path $env:TEMP (Split-Path $dlurl -Leaf)
+#                Invoke-WebRequest $dlurl -OutFile $installerPath -UseBasicParsing
+#                Start-Process -FilePath $installerPath -Args "/S" -Verb RunAs -Wait
+#                Remove-Item $installerPath} 
+#
+#            new-item -ItemType Directory -Path $printerfolder -Force | out-null
+#
+#        #Downloader driver
+#        write-host "`t`t- Downloader driver.."
+#            Remove-item -Path $printerfolder\* -Force -recurse | out-null
+#            (New-Object Net.WebClient).DownloadFile($printdriverlink, "$printerfolder\$file")
+#
+#        #Udpakker driver
+#        write-host "`t`t- Udpakker driver.."
+#            & ${env:ProgramFiles}\7-Zip\7z.exe x "$printerfolder\$file" "-o$($printerfolder)" -y | out-null; ; sleep -s 5
+#
+#        #Installer Printer
+#        write-host "`t`t- Konfigurer Printer:"; sleep -s 5
+#            write-host "`t`t`t`t- Driverbiblotek"
+#            pnputil.exe -i -a $printerinf | out-null ; sleep -s 5
+#            write-host "`t`t`t`t- Driver"
+#            Add-PrinterDriver -Name $printerdriver | out-null; sleep -s 5
+#            write-host "`t`t`t`t- Printerport"
+#            Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip | out-null; sleep -s 5
+#            write-host "`t`t`t`t- Printer"
+#            Add-Printer -Name $printername -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
+#        #Oprydning
+#            Remove-item  -Path "$printerfolder\" -Exclude $file -Recurse -Force
+#            Stop-Service "Spooler" | Out-Null; sleep -s 5
+#            Start-Service "Spooler" | Out-Null
+#            # undgå dobbelsidet udskrift
+#            Get-Printer | ? Name -match $printername | Set-PrintConfiguration -DuplexingMode OneSided;
+#        write-host "`t- Printeren er installeret!" -f Green
+#    }else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
     
     write-host "Tester forbindelse til printer 20 (Scanner ved indgangen).." -NoNewline; Sleep -s 3
     if (Test-Connection  192.168.1.20 -Quiet) {
