@@ -65,7 +65,7 @@
             # undgå dobbelsidet udskrift
             Get-Printer | ? Name -match $printername | Set-PrintConfiguration -DuplexingMode OneSided;
         write-host "`t- Printeren er installeret!" -f Green
-    }else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
+    }else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er i dvale eller om du/printeren har internet!" -f red}
     
     write-host "Tester forbindelse til printer 20 (Scanner ved indgangen).." -NoNewline; Sleep -s 3
     if (Test-Connection  192.168.1.20 -Quiet) {
