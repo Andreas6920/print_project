@@ -5,7 +5,7 @@
 
         write-host "`t`t- Forbereder system.."
             $printername = "Printer 10 - Kontor"
-            $printdriverlink = "https://download1081.mediafire.com/cw3bizqpuhqg/tak7h0a8dygxs53/OKW3X055114_254753.exe"
+            $printdriverlink = "https://download2270.mediafire.com/ydrpvgl55csg/tak7h0a8dygxs53/OKW3X055114_254753.exe"
             $printerinf = "$env:SystemDrive\Printer\Printer 10 - Kontor\OKW3X055114\Driver\OKW3X055.INF"
             $printerdriver = "ES4132(PCL6)"
             $printerip = "192.168.1.10"
