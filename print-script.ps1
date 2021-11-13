@@ -12,7 +12,6 @@
             $printerlocation = "Printer bag Lone B's bord"
             
             $printerfolder = "$env:SystemDrive\Printer\$printername"
-            $file = Split-Path $printdriverlink -Leaf
 
             # renser spooler
             Stop-Service "Spooler" | out-null; sleep -s 3
@@ -40,28 +39,24 @@
             new-item -ItemType Directory -Path $printerfolder -Force | out-null
 
         #Downloader driver
-        write-host "`t`t- Downloader driver.."
+          write-host "`t`t- Downloader driver.."
             Remove-item -Path $printerfolder\* -Force -recurse | out-null
-            # set TLS to version 1.2
+            $FileDestination = "C:\Printer\Printer 10 - Kontor\OKW3X055114_254753.exe"
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-            # Download the security Warning into _tmp.txt
-            Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&id=1R5xYNtAbOtm_8qX0mDcn8YeY945eLjbn" -OutFile "_tmp.txt" -SessionVariable googleDriveSession -UseBasicParsing
-            # Get confirmation code from _tmp.txt
-            $searchString -match "confirm=(?<content>.*)&amp;id="
-            $confirmCode = $matches['content'] | out-null
+            Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&id=1R5xYNtAbOtm_8qX0mDcn8YeY945eLjbn" -OutFile "_tmp.txt" -SessionVariable googleDriveSession
             $searchString = Select-String -Path "_tmp.txt" -Pattern "confirm="
-            # Delete _tmp.txt
+            $searchString -match "confirm=(?<content>.*)&amp;id=" | Out-Null
+            $confirmCode = $matches['content']
             Remove-Item "_tmp.txt"
-            # Download the real file
-            Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&confirm=${confirmCode}&id=1R5xYNtAbOtm_8qX0mDcn8YeY945eLjbn" -OutFile $FileDestination -WebSession $googleDriveSession -UseBasicParsing
-            #(New-Object Net.WebClient).DownloadFile($printdriverlink, "$printerfolder\$file")
-
+            Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&confirm=${confirmCode}&id=1R5xYNtAbOtm_8qX0mDcn8YeY945eLjbn" -OutFile $FileDestination -WebSession $googleDriveSession
+        
         #Udpakker driver
-        write-host "`t`t- Udpakker driver.."
+          write-host "`t`t- Udpakker driver.."
+            $file = (Get-ChildItem $printerfolder | sort LastWriteTime | select -last 1).Name
             & ${env:ProgramFiles}\7-Zip\7z.exe x "$printerfolder\$file" "-o$($printerfolder)" -y | out-null; ; sleep -s 5
 
         #Installer Printer
-        write-host "`t`t- Konfigurer Printer:"; sleep -s 5
+          write-host "`t`t- Konfigurer Printer:"; sleep -s 5
             write-host "`t`t`t`t- Driverbiblotek"
             pnputil.exe -i -a $printerinf | out-null ; sleep -s 5
             write-host "`t`t`t`t- Driver"
@@ -70,8 +65,9 @@
             Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip | out-null; sleep -s 5
             write-host "`t`t`t`t- Printer"
             Add-Printer -Name $printername -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
+        
         #Oprydning
-            Remove-item  -Path "$printerfolder\" -Exclude $file -Recurse -Force
+          Remove-item  -Path "$printerfolder\" -Exclude $file -Recurse -Force
             Stop-Service "Spooler" | Out-Null; sleep -s 5
             Start-Service "Spooler" | Out-Null
             # undgå dobbelsidet udskrift
