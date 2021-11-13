@@ -42,7 +42,7 @@
         #Downloader driver
         write-host "`t`t- Downloader driver.."
             Remove-item -Path $printerfolder\* -Force -recurse | out-null
-            # set protocol to tls version 1.2
+            # set TLS to version 1.2
             [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
             # Download the security Warning into _tmp.txt
             Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&id=1R5xYNtAbOtm_8qX0mDcn8YeY945eLjbn" -OutFile "_tmp.txt" -SessionVariable googleDriveSession -UseBasicParsing
