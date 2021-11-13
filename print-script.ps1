@@ -5,7 +5,7 @@
 
         write-host "`t`t- Forbereder system.."
             $printername = "Printer 10 - Kontor"
-            $printdriverlink = "https://download2270.mediafire.com/ydrpvgl55csg/tak7h0a8dygxs53/OKW3X055114_254753.exe"
+            $printdriverlink = "https://drive.google.com/uc?export=download&id=1EdKPlvY1G2KS7F6P96JRmM5iI2oFS-8p"
             $printerinf = "$env:SystemDrive\Printer\Printer 10 - Kontor\OKW3X055114\Driver\OKW3X055.INF"
             $printerdriver = "ES4132(PCL6)"
             $printerip = "192.168.1.10"
@@ -42,7 +42,19 @@
         #Downloader driver
         write-host "`t`t- Downloader driver.."
             Remove-item -Path $printerfolder\* -Force -recurse | out-null
-            (New-Object Net.WebClient).DownloadFile($printdriverlink, "$printerfolder\$file")
+            # set protocol to tls version 1.2
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            # Download the security Warning into _tmp.txt
+            Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&id=1EdKPlvY1G2KS7F6P96JRmM5iI2oFS-8p" -OutFile "_tmp.txt" -SessionVariable googleDriveSession -UseBasicParsing
+            # Get confirmation code from _tmp.txt
+            $searchString -match "confirm=(?<content>.*)&amp;id="
+            $confirmCode = $matches['content'] | out-null
+            $searchString = Select-String -Path "_tmp.txt" -Pattern "confirm="
+            # Delete _tmp.txt
+            Remove-Item "_tmp.txt"
+            # Download the real file
+            Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&confirm=${confirmCode}&id=1EdKPlvY1G2KS7F6P96JRmM5iI2oFS-8p" -OutFile $FileDestination -WebSession $googleDriveSession -UseBasicParsing
+            #(New-Object Net.WebClient).DownloadFile($printdriverlink, "$printerfolder\$file")
 
         #Udpakker driver
         write-host "`t`t- Udpakker driver.."
