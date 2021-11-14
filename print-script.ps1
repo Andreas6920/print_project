@@ -1,5 +1,5 @@
 ﻿# Need-to-be-fixed list:
-    # Printer 50 - mangler driver fra en af de andres computer.
+    # Empty.
 
 function printer_kontor {
     
@@ -176,9 +176,17 @@ function printer_kontor {
 
         # Downloader driver
         write-host "`t`t- Downloader driver.."
+            # Downloader driver
+          write-host "`t`t- Downloader driver.."
             Remove-item -Path $printerfolder\* -Force -recurse | out-null
-            (New-Object Net.WebClient).DownloadFile($printdriverlink, "$printerfolder\$file")
-
+            $FileDestination = "C:\Printer\Printer 50 - Kontor\LJM507_Full_WebPack_49.1.4431.exe"
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+            Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&id=1ReVrnos3kCbMtkhLv988hydfoJUiZAmf" -OutFile "_tmp.txt" -SessionVariable googleDriveSession
+            $searchString = Select-String -Path "_tmp.txt" -Pattern "confirm="
+            $searchString -match "confirm=(?<content>.*)&amp;id=" | Out-Null
+            $confirmCode = $matches['content']
+            Remove-Item "_tmp.txt"
+            Invoke-WebRequest -Uri "https://drive.google.com/uc?export=download&confirm=${confirmCode}&id=1ReVrnos3kCbMtkhLv988hydfoJUiZAmf" -OutFile $FileDestination -WebSession $googleDriveSession
         # Udpakker driver
         write-host "`t`t- Udpakker driver.."
             & ${env:ProgramFiles}\7-Zip\7z.exe x "$printerfolder\$file" "-o$($printerfolder)" -y | out-null; ; sleep -s 5
@@ -196,7 +204,7 @@ function printer_kontor {
             Stop-Service "Spooler" | Out-Null; sleep -s 5
             Start-Service "Spooler" | Out-Null
 
-        write-host "`t- Printeren er installeret!" -f Green
+        write-host "`t- Printeren er installeret! `n" -f Green
     }else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
 
     # Når afdelingen printere er installeret:
