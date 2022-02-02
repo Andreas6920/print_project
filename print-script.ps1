@@ -455,7 +455,7 @@ function printer_lager {
         Write-host ""; Write-host "";
         Write-host "Printer installation:"
         Write-host "`t1  - Kontor afdeling`t(printer 10, 20, 50)"
-        Write-host "`t2  - Lager afdeling`t`t(printer 30, 40)"
+        Write-host "`t2  - Lager afdeling`t(printer 30, 40)"
         Write-host "`t3  - Butiks afdeling`t(printer 60)"
         #"";"";Write-host "Andet:"
         #Write-host "        [4] - Installation af helt ny PC"
