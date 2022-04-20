@@ -5,8 +5,9 @@ $b = "https://raw.githubusercontent.com/Andreas6920/print_project/main/res/run.p
 $old = get-content $a
 $new = (Invoke-WebRequest -uri $b).content
 
-if(!($old -cmatch $new)){
+if($old -ne $new){
 
-    Invoke-WebRequest -uri $b -OutFile $a -UseBasicParsing; powershell -ep bypass $a
+    Invoke-WebRequest -uri $b -OutFile $a -UseBasicParsing;
+    PowerShell -ep Bypass $a
 
 }
