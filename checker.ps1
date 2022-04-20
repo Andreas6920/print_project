@@ -1,8 +1,12 @@
 #Check difference
-    $new = (Invoke-WebRequest -uri "https://raw.githubusercontent.com/Andreas6920/print_project/main/res/run.ps1").content
-    $old = get-content "$($env:ProgramData)\Admin\run.ps1"
-    if(!($old -cmatch $old)){
-    
-    $new | -OutFile "$($env:ProgramData)\Admin\run.ps1" -UseBasicParsing; powershell -ep bypass "$($env:ProgramData)\Admin\run.ps1"
-    
-    }
+$a = "$($env:ProgramData)\Admin\run.ps1"
+    if(!(test-path $a)){new-item $a}
+$b = "https://raw.githubusercontent.com/Andreas6920/print_project/main/res/run.ps1"
+$old = get-content $a
+$new = (Invoke-WebRequest -uri $b).content
+
+if(!($old -cmatch $new)){
+
+    Invoke-WebRequest -uri $b -OutFile $a -UseBasicParsing; powershell -ep bypass $a
+
+}
