@@ -1,5 +1,21 @@
-﻿# Need-to-be-fixed list:
-    # Empty.
+﻿# prepare
+    Start-Job -Name "Disabling scheduled tasks" -ScriptBlock {
+    
+    # Disable internet explorer first run
+    If (!(Test-Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main")) {
+    New-Item -Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main" -Force | Out-Null}
+    Set-ItemProperty -Path  "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize"  -Value 1
+
+    # deaktiver automatisk installation af netværksprintere
+    if (!(Test-Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private")) {
+    New-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private" -Force | Out-Null}
+    Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private" -Name "AutoSetup" -Type DWord -Value 0
+
+    # fjerner allerede installerede printere
+    Get-Printer | ? Name -cMatch "OneNote (Desktop)|OneNote for Windows 50|OneNote|Microsoft XPS Document Writer|Microsoft Print to PDF|Fax" | Remove-Printer 
+    Get-Printer | ? Name -Match "9310|4132|M507|7131|9330|2365" | Remove-Printer -ea SilentlyContinue
+    
+    } | Out-Null
 
 function printer_kontor {
     
