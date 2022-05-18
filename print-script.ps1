@@ -165,8 +165,7 @@ if (Test-Connection  "192.168.1.50" -Quiet) {
     Get-Printer * | Set-PrintConfiguration -DuplexingMode OneSided
 
     # Slet udpakkede filer, for besparelse af diskplads. driver bibeholdes.
-    $newfolders = Get-ChildItem -Directory -path C:\Printer | where name -match kontor
-    Foreach ($folder in $newfolders){cd c:\printer\$folder; remove-item * -Exclude "*.zip" -Recurse -Force }
+    remove-item "C:\Printer\*" -Exclude "printer_*.zip" -Recurse -Force
 
 
 }
@@ -238,17 +237,16 @@ if (Test-Connection  192.168.1.60 -Quiet) {
         Start-Service "Spooler" | Out-Null
         write-host "`t- Printeren er installeret!" -f Green
         
-# Post installation
+    # Post installation
+        
+        # List alle printer og sæt dem til en-sidet print
+        Get-Printer * | Set-PrintConfiguration -DuplexingMode OneSided
     
-    # List alle printer og sæt dem til en-sidet print
-    Get-Printer * | Set-PrintConfiguration -DuplexingMode OneSided
-
-    # Slet udpakkede filer, for besparelse af diskplads. driver bibeholdes.
-    $newfolders = Get-ChildItem -Directory -path C:\Printer | where name -match Butik
-    Foreach ($folder in $newfolders){cd c:\printer\$folder; remove-item * -Exclude "*.zip" -Recurse -Force }
-
-}else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
-
+        # Slet udpakkede filer, for besparelse af diskplads. driver bibeholdes.
+        remove-item "C:\Printer\*" -Exclude "printer_*.zip" -Recurse -Force
+        
+    }else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
+    
 
 }
 
@@ -361,6 +359,15 @@ if (Test-Connection  192.168.1.40 -Quiet) {
             Start-Service "Spooler" | Out-Null
     
         write-host "`t- Printer 40 er installeret!" -f Green
+
+    # Post installation
+        
+        # List alle printer og sæt dem til en-sidet print
+        Get-Printer * | Set-PrintConfiguration -DuplexingMode OneSided
+    
+        # Slet udpakkede filer, for besparelse af diskplads. driver bibeholdes.
+        remove-item "C:\Printer\*" -Exclude "printer_*.zip" -Recurse -Force
+
 }else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
 
 
