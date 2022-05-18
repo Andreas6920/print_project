@@ -84,7 +84,7 @@ if (Test-Connection  "192.168.1.20" -Quiet) {
         $printerlocation = "Canon printer med scanner"
         $printerdriverfile = "C:\Printer\Printer 20 - Kontor\printer_20.zip"
         $printerdriverinf = "$env:SystemDrive\Printer\Printer 20 - Kontor\Driver\Cnp60MA64.INF"
-        $printerdriverlink = "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1mNtlQk2cay5rx1RQwzM8J4Y17cv7TM2y"
+        $printerdriverlink = "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1mW3MC4ODo77bfyWa3sGotITFsaZICvwi"
     
     # Mappe oprettes til driver
         if(!(test-path $printerfolder)){new-item -ItemType Directory $printerfolder | Out-Null}
@@ -106,7 +106,7 @@ if (Test-Connection  "192.168.1.20" -Quiet) {
         Add-PrinterDriver -Name $printerdriver | out-null; sleep -s 5
         write-host "`t`t`t`t- Printerport"
         Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip | out-null; sleep -s 5
-        write-host "`t`t`t`t- Printer"
+        write-host "`t`t`t`t- Printer (den her tager noget tid)"
         Add-Printer -Name $printername -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
         Stop-Service "Spooler" | Out-Null; sleep -s 5
         Start-Service "Spooler" | Out-Null
