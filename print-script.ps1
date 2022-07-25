@@ -71,7 +71,7 @@ if (Test-Connection  "192.168.1.11" -Quiet) {
 
     write-host "`t- Printer 10 er installeret!" -f Green}
     
-else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er i dvale eller om du/printeren har internet!" -f red}
+else {write-host " [INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
 
 # Printer 20 - Kontor
 write-host "Forbinder til printer 20 (Scanner ved indgangen).." -NoNewline; Sleep -s 3
@@ -116,7 +116,7 @@ if (Test-Connection  "192.168.1.20" -Quiet) {
 
     write-host "`t- Printer 20 er installeret!" -f Green}
     
-else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
+else {write-host " [INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
 
 # Printer 50 - Kontor
 write-host "Forbinder til printer 50 (HP printeren).." -NoNewline; Sleep -s 3
@@ -160,7 +160,7 @@ if (Test-Connection  "192.168.1.50" -Quiet) {
         Start-Service "Spooler" | Out-Null
 
     write-host "`t- Printeren er installeret! `n" -f Green
-}else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
+}else {write-host " [INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
 
 # Post installation
     
@@ -168,7 +168,7 @@ if (Test-Connection  "192.168.1.50" -Quiet) {
     Get-Printer * | Set-PrintConfiguration -DuplexingMode OneSided
 
     # Slet udpakkede filer, for besparelse af diskplads. driver bibeholdes.
-    remove-item "C:\Printer\*" -Exclude "printer_*.zip" -Recurse -Force
+    remove-item "C:\Printer\*" -Exclude "printer_*.zip" -Recurse -Force -ErrorAction Ignore | Out-Null
 
 
 }
@@ -246,9 +246,9 @@ if (Test-Connection  192.168.1.60 -Quiet) {
         Get-Printer * | Set-PrintConfiguration -DuplexingMode OneSided
     
         # Slet udpakkede filer, for besparelse af diskplads. driver bibeholdes.
-        remove-item "C:\Printer\*" -Exclude "printer_*.zip" -Recurse -Force
+        remove-item "C:\Printer\*" -Exclude "printer_*.zip" -Recurse -Force -ErrorAction Ignore | Out-Null
         
-    }else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
+    }else {write-host " [INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
     
 
 }
@@ -319,7 +319,7 @@ if (Test-Connection  192.168.1.30 -Quiet) {
         Start-Service "Spooler" | Out-Null
     
     write-host "`t- Printer 30 er installeret!" -f Green
-}else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
+}else {write-host " [INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
 
 write-host "Forbinder til printer 40 (Printer ved Booking-PC).. " -NoNewline; Sleep -s 3
 if (Test-Connection  192.168.1.40 -Quiet) {
@@ -369,9 +369,10 @@ if (Test-Connection  192.168.1.40 -Quiet) {
         Get-Printer * | Set-PrintConfiguration -DuplexingMode OneSided
     
         # Slet udpakkede filer, for besparelse af diskplads. driver bibeholdes.
-        remove-item "C:\Printer\*" -Exclude "printer_*.zip" -Recurse -Force
+        remove-item "C:\Printer\*" -Exclude "printer_*.zip" -Recurse -Force -ErrorAction Ignore | Out-Null
 
-}else {write-host "[INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om den er slukket eller om du/printeren har internet!" -f red}
+}else {write-host " [INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
+
 
 
 }
