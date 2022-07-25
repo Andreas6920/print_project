@@ -23,23 +23,26 @@ function printer_kontor {
     # Fjerner allerede installerede printere
         Get-Printer | ? Name -cMatch "OneNote (Desktop)|OneNote for Windows 50|OneNote|Microsoft XPS Document Writer|Microsoft Print to PDF|Fax" | Remove-Printer 
         Get-Printer | ? Name -Match "9310|4132|M507|7131|9330|2365" | Remove-Printer -ea SilentlyContinue
-
-
+        # Fjern gamle printer 10 hvis den er installeret
+        Get-Printer | ? Portname -eq "192.168.1.10" | Remove-Printer 
+        Get-Printerport | ? name -eq "192.168.1.10" | remove-printerport
+        
 # Printer 10 - Kontor
-write-host "Forbinder til printer 10 (Printer bag Lones plads).." -NoNewline; Sleep -s 3
-if (Test-Connection  "192.168.1.10" -Quiet) {
+write-host "Forbinder til printer 11 (Printer bag Lones plads).." -NoNewline; Sleep -s 3
+
+if (Test-Connection  "192.168.1.11" -Quiet) {
     write-host "[Forbindelse verificeret]".toUpper() -f green
-    write-host "`t- Begynder installation af Printer 10:"; Sleep -s 5
+    write-host "`t- Begynder installation af Printer 11:"; Sleep -s 5
     write-host "`t`t- Forbereder system.."
     # Variabler klargøres
-        $printername = "Printer 10 - Kontor"
+        $printername = "Printer 11 - Kontor"
         $printerfolder = "$env:SystemDrive\Printer\$printername"
-        $printerdriver = "ES4132(PCL6)"
-        $printerip = "192.168.1.10"
+        $printerdriver = "HP LaserJet M507 PCL 6 (V3)"
+        $printerip = "192.168.1.11"
         $printerlocation = "Printer bag Lone B's bord"
-        $printerdriverfile = "C:\Printer\Printer 10 - Kontor\printer_10.zip"
-        $printerdriverinf = "$env:SystemDrive\Printer\Printer 10 - Kontor\OKW3X055114\Driver\OKW3X055.INF"
-        $printerdriverlink = "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1a8s__5qyup83m1OpzLy2ZwAZflgkYuDd" 
+        $printerdriverfile = "C:\Printer\Printer 11 - Kontor\printer_11.zip"
+        $printerdriverinf = "$env:SystemDrive\Printer\Printer 11 - Kontor\hpkoca2a_x64.inf"
+        $printerdriverlink = "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1aAFlSwdaEXwYMnZm-7G-rDQcQZX45R4a" 
 
     # Mappe oprettes til driver
         if(!(test-path $printerfolder)){new-item -ItemType Directory $printerfolder | Out-Null}
