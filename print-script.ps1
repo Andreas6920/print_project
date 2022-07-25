@@ -25,7 +25,7 @@ function printer_kontor {
         Get-Printer | ? Name -Match "9310|4132|M507|7131|9330|2365" | Remove-Printer -ea SilentlyContinue
         # Fjern gamle printer 10 hvis den er installeret
         Get-Printer | ? Portname -eq "192.168.1.10" | Remove-Printer 
-        Get-Printerport | ? name -eq "192.168.1.10" | remove-printerport
+        Get-Printerport | ? name -eq "192.168.1.10" | Remove-Printerport
         
 # Printer 10 - Kontor
 write-host "Forbinder til printer 11 (Printer bag Lones plads).." -NoNewline; Sleep -s 3
@@ -392,7 +392,7 @@ do {
     "";"";Write-host "VÆLG EN AF FØLGENDE MULIGHEDER VED AT INDTASTE NUMMERET:" -f yellow
     Write-host ""; Write-host "";
     Write-host "Printer installation:"
-    Write-host "`t1  - Kontor afdeling`t(printer 10, 20, 50)"
+    Write-host "`t1  - Kontor afdeling`t(printer 11, 20, 50)"
     Write-host "`t2  - Lager afdeling`t(printer 30, 40)"
     Write-host "`t3  - Butiks afdeling`t(printer 60)"
     #"";"";Write-host "Andet:"
