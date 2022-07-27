@@ -1,108 +1,8 @@
-﻿function Install-Printer {
-
-    param (
-        [Parameter(Mandatory=$true)]
-        [string]$Name,
-        [Parameter(Mandatory=$true)]
-        [string]$IPv4,
-        [Parameter(Mandatory=$false)]
-        [string]$Driverlink,
-        [Parameter(Mandatory=$true)]
-        [string]$Drivername,
-        [Parameter(Mandatory=$true)]
-        [string]$Driverfilename,
-        [Parameter(Mandatory=$true)]
-        [string]$Location)
-
-
-    # Tjek forbindelse til Printer
-        if (Test-Connection  $IPv4 -Quiet) {
-        Write-Host "Forbinder til " $Name "...`t" -NoNewline
-        Start-Sleep -s 3
-        Write-Host "[Forbindelse verificeret]".toUpper() -f green
-    
-    # Variabler
-        $printerfolder = "$env:SystemDrive\Printer\$Name"
-        $printerdriverfile = "$($env:SystemDrive)\Printer\$Name\$Name.zip"
-
-    # Pre-install
-        # Clean spooler
-        if(Get-ChildItem "$env:SystemRoot\System32\spool\PRINTERS\" ){
-            Write-Host "`t`t`t`t- Renser spooler"
-            Stop-Service "Spooler" | out-null 
-            Start-Sleep -s 3
-            Remove-Item "$env:SystemRoot\System32\spool\PRINTERS\*.*" -Force | Out-Null
-            Start-Service "Spooler" | out-null
-            Start-Sleep -s 3}
-        # Deaktiver internet explorer first run
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        if (!(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main").DisableFirstRunCustomize){
-            Write-Host "`t`t`t`t- Deaktiver IE wizard"
-            Start-Sleep -s 3
-            New-Item -Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main" -Force | Out-Null
-            Start-Sleep -s 3
-            Set-ItemProperty -Path  "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize"  -Value 1}
-        # Deaktiver automatisk installation af netværksprintere
-        if (!(Test-Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private")) {
-            Write-Host "`t`t`t`t- Deaktiver auto install.."
-            New-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private" -Force | Out-Null
-            Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private" -Name "AutoSetup" -Type DWord -Value 0}
-
-    # Install
-        if(!(get-printer | ? Name -EQ $Name)){
-            Write-Host "`t- Begynder installation af" $Name ":"
-            Start-Sleep -s 3
-            
-        
-            # Mappe oprettes til driver
-            if(!(test-path $printerfolder)){new-item -ItemType Directory $printerfolder | Out-Null}
-            else{Remove-item -Path $printerfolder\* -Force -recurse | out-null}
-        
-            # Downloader driver
-            Write-Host "`t`t- Downloader driver.."
-            (New-Object net.webclient).Downloadfile($Driverlink, $printerdriverfile)   
-        
-            # Udpakker driver
-            Write-Host "`t`t- Udpakker driver.."
-            Expand-Archive -Path $printerdriverfile -DestinationPath $printerfolder
-        
-            #Find .inf fil
-            $printerdriverinf = (get-childitem $printerfolder -include "*.inf" -Recurse | ? Name -eq $Driverfilename)[0].FullName
-
-            # Installer Printer
-            Write-Host "`t`t- Konfigurer Printer:"
-            Start-Sleep -s 3
-            Write-Host "`t`t`t`t- Tilføjer Driver"
-            pnputil.exe -i -a $printerdriverinf | out-null
-            Start-Sleep -s 3
-            Write-Host "`t`t`t`t- Installér Driver:"$Drivername
-            Add-PrinterDriver -Name $Drivername | out-null
-            Start-Sleep -s 3
-            Write-Host "`t`t`t`t- Opretter printerport:"$IPv4
-            if(!(Get-printerport $IPv4)){Remove-PrinterPort $IPv4; Start-Sleep -s 3}
-            Add-PrinterPort -Name $IPv4 -PrinterHostAddress $IPv4 -ErrorAction Ignore | out-null
-            Start-Sleep -s 3
-            Write-Host "`t`t`t`t- Opsætter printer"
-            Add-Printer -Name $Name -PortName $IPv4 -DriverName $Drivername -PrintProcessor winprint -Location $Location -Comment "automatiseret af Andreas" | out-null; sleep -s 5
-
-            # post-install
-            Write-Host "`t`t`t`t- Afslutter installation"
-            Start-sleep -S 3;
-            Get-Printer -Name $Name | Set-PrintConfiguration -DuplexingMode OneSided
-            Remove-Item $printerfolder -Exclude $printerdriverfile -Recurse -Force -ErrorAction Ignore | Out-Null
-            Start-Service  -Name "Spooler"
-            Write-Host "`t- $Name er installeret!" -f Green}
-
-    }
-}
-
-# Syntax: Install-Printer -Name "Printer 10 - Kontor" -IPv4 "1.1.1.1" -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1aAFlSwdaEXwYMnZm-7G-rDQcQZX45R4a" -Location "London" -Drivername "HP LaserJet M507 PCL 6 (V3)" -Driverfilename "hpkoca2a_x64.inf"
-
-
+﻿
 function printer_kontor {
 
 # prepare
-    Write-Host "Systemet klargøres.."
+    write-host "Systemet klargøres.."
 
     # Clean spooler
         Stop-Service "Spooler" | out-null; sleep -s 3
@@ -127,13 +27,13 @@ function printer_kontor {
         Get-Printer | ? Portname -eq "192.168.1.10" | Remove-Printer 
         Get-Printerport | ? name -eq "192.168.1.10" | Remove-Printerport
         
-# Printer 11 - Kontor
-Write-Host "Forbinder til printer 11 (Printer bag Lones plads).." -NoNewline; Sleep -s 3
+# Printer 10 - Kontor
+write-host "Forbinder til printer 11 (Printer bag Lones plads).." -NoNewline; Sleep -s 3
 
 if (Test-Connection  "192.168.1.11" -Quiet) {
-    Write-Host "[Forbindelse verificeret]".toUpper() -f green
-    Write-Host "`t- Begynder installation af Printer 11:"; Sleep -s 5
-    Write-Host "`t`t- Forbereder system.."
+    write-host "[Forbindelse verificeret]".toUpper() -f green
+    write-host "`t- Begynder installation af Printer 11:"; Sleep -s 5
+    write-host "`t`t- Forbereder system.."
     # Variabler klargøres
         $printername = "Printer 11 - Kontor"
         $printerfolder = "$env:SystemDrive\Printer\$printername"
@@ -149,36 +49,36 @@ if (Test-Connection  "192.168.1.11" -Quiet) {
         else{Remove-item -Path $printerfolder\* -Force -recurse | out-null}
 
     # Downloader driver
-        Write-Host "`t`t- Downloader driver.."
+        write-host "`t`t- Downloader driver.."
         (New-Object net.webclient).Downloadfile($printerdriverlink, $printerdriverfile)   
 
     # Udpakker driver
-        Write-Host "`t`t- Udpakker driver.."
+        write-host "`t`t- Udpakker driver.."
         Expand-Archive -Path $printerdriverfile -DestinationPath $printerfolder
 
     # Installer Printer
-      Write-Host "`t`t- Konfigurer Printer:"; sleep -s 5
-        Write-Host "`t`t`t`t- Driverbiblotek"
+      write-host "`t`t- Konfigurer Printer:"; sleep -s 5
+        write-host "`t`t`t`t- Driverbiblotek"
         pnputil.exe -i -a $printerdriverinf | out-null ; sleep -s 5
-        Write-Host "`t`t`t`t- Driver"
+        write-host "`t`t`t`t- Driver"
         Add-PrinterDriver -Name $printerdriver | out-null; sleep -s 5
-        Write-Host "`t`t`t`t- Printerport"
+        write-host "`t`t`t`t- Printerport"
         Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip | out-null; sleep -s 5
-        Write-Host "`t`t`t`t- Printer"
+        write-host "`t`t`t`t- Printer"
         Add-Printer -Name $printername -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
         Stop-Service "Spooler" | Out-Null; sleep -s 5
         Start-Service "Spooler" | Out-Null
 
-    Write-Host "`t- Printer 10 er installeret!" -f Green}
+    write-host "`t- Printer 10 er installeret!" -f Green}
     
-else {Write-Host " [INGEN FORBINDELSE]" -f red; Write-Host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
+else {write-host " [INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
 
 # Printer 20 - Kontor
-Write-Host "Forbinder til printer 20 (Scanner ved indgangen).." -NoNewline; Sleep -s 3
+write-host "Forbinder til printer 20 (Scanner ved indgangen).." -NoNewline; Sleep -s 3
 if (Test-Connection  "192.168.1.20" -Quiet) {
-    Write-Host "[Forbindelse verificeret]".toUpper() -f green
-    Write-Host "`t- Begynder installation af Printer 20:"; Sleep -s 5
-    Write-Host "`t`t- Forbereder system.."
+    write-host "[Forbindelse verificeret]".toUpper() -f green
+    write-host "`t- Begynder installation af Printer 20:"; Sleep -s 5
+    write-host "`t`t- Forbereder system.."
     # Variabler klargøres    
         $printername = "Printer 20 - Kontor"
         $printerfolder =  "$env:SystemDrive\Printer\$printername"
@@ -194,36 +94,36 @@ if (Test-Connection  "192.168.1.20" -Quiet) {
         else{Remove-item -Path $printerfolder\* -Force -recurse | out-null}
 
     # Downloader driver
-        Write-Host "`t`t- Downloader driver.."
+        write-host "`t`t- Downloader driver.."
         (New-Object net.webclient).Downloadfile($printerdriverlink, $printerdriverfile)   
 
     # Udpakker driver
-        Write-Host "`t`t- Udpakker driver.."
+        write-host "`t`t- Udpakker driver.."
         Expand-Archive -Path $printerdriverfile -DestinationPath $printerfolder   
 
     #Installer Printer
-        Write-Host "`t`t- Konfigurer Printer:"; sleep -s 5
-        Write-Host "`t`t`t`t- Driverbiblotek"
+        write-host "`t`t- Konfigurer Printer:"; sleep -s 5
+        write-host "`t`t`t`t- Driverbiblotek"
         pnputil.exe -i -a $printerdriverinf | out-null ; sleep -s 5
-        Write-Host "`t`t`t`t- Driver"
+        write-host "`t`t`t`t- Driver"
         Add-PrinterDriver -Name $printerdriver | out-null; sleep -s 5
-        Write-Host "`t`t`t`t- Printerport"
+        write-host "`t`t`t`t- Printerport"
         Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip | out-null; sleep -s 5
-        Write-Host "`t`t`t`t- Printer (den her tager noget tid)"
+        write-host "`t`t`t`t- Printer (den her tager noget tid)"
         Add-Printer -Name $printername -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
         Stop-Service "Spooler" | Out-Null; sleep -s 5
         Start-Service "Spooler" | Out-Null
 
-    Write-Host "`t- Printer 20 er installeret!" -f Green}
+    write-host "`t- Printer 20 er installeret!" -f Green}
     
-else {Write-Host " [INGEN FORBINDELSE]" -f red; Write-Host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
+else {write-host " [INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
 
 # Printer 50 - Kontor
-Write-Host "Forbinder til printer 50 (HP printeren).." -NoNewline; Sleep -s 3
+write-host "Forbinder til printer 50 (HP printeren).." -NoNewline; Sleep -s 3
 if (Test-Connection  "192.168.1.50" -Quiet) {
-    Write-Host "[Forbindelse verificeret]".toUpper() -f green
-    Write-Host "`t- Begynder installation af Printer 50:"; Sleep -s 5
-    Write-Host "`t`t- Forbereder system.."
+    write-host "[Forbindelse verificeret]".toUpper() -f green
+    write-host "`t- Begynder installation af Printer 50:"; Sleep -s 5
+    write-host "`t`t- Forbereder system.."
     # Variabler     
         $printername = "Printer 50 - Kontor"
         $printerfolder = "$env:SystemDrive\Printer\$printername"
@@ -239,28 +139,28 @@ if (Test-Connection  "192.168.1.50" -Quiet) {
         else{Remove-item -Path $printerfolder\* -Force -recurse | out-null}
 
     # Downloader driver
-        Write-Host "`t`t- Downloader driver.."
+        write-host "`t`t- Downloader driver.."
         (New-Object net.webclient).Downloadfile($printerdriverlink  , $printerdriverfile)   
 
     # Udpakker driver
-        Write-Host "`t`t- Udpakker driver.."
+        write-host "`t`t- Udpakker driver.."
         Expand-Archive -Path $printerdriverfile -DestinationPath $printerfolder   
     
     # Installer Printer
-        Write-Host "`t`t- Konfigurer Printer:"; sleep -s 5
-        Write-Host "`t`t`t`t- Driverbiblotek"
+        write-host "`t`t- Konfigurer Printer:"; sleep -s 5
+        write-host "`t`t`t`t- Driverbiblotek"
         pnputil.exe -i -a $printerdriverinf | out-null ; sleep -s 5
-        Write-Host "`t`t`t`t- Driver"
+        write-host "`t`t`t`t- Driver"
         Add-PrinterDriver -Name $printerdriver | out-null; sleep -s 5
-        Write-Host "`t`t`t`t- Printerport"
+        write-host "`t`t`t`t- Printerport"
         Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip | out-null; sleep -s 5
-        Write-Host "`t`t`t`t- Printer"
+        write-host "`t`t`t`t- Printer"
         Add-Printer -Name $printername -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
         Stop-Service "Spooler" | Out-Null; sleep -s 5
         Start-Service "Spooler" | Out-Null
 
-    Write-Host "`t- Printeren er installeret! `n" -f Green
-}else {Write-Host " [INGEN FORBINDELSE]" -f red; Write-Host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
+    write-host "`t- Printeren er installeret! `n" -f Green
+}else {write-host " [INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
 
 # Post installation
     
@@ -276,7 +176,7 @@ if (Test-Connection  "192.168.1.50" -Quiet) {
 function printer_butik {
 
 # prepare
-    Write-Host "Systemet klargøres.."
+    write-host "Systemet klargøres.."
 
     # Clean spooler
         Stop-Service "Spooler" | out-null; sleep -s 3
@@ -299,11 +199,11 @@ function printer_butik {
         Get-Printer | ? Name -Match "9310|4132|M507|7131|9330|2365" | Remove-Printer -ea SilentlyContinue
 
 
-Write-Host "Forbinder til printer 60 (Printer ved kassen).." -NoNewline; Sleep -s 3
+write-host "Forbinder til printer 60 (Printer ved kassen).." -NoNewline; Sleep -s 3
 if (Test-Connection  192.168.1.60 -Quiet) {
-    Write-Host "[Forbindelse verificeret]".toUpper() -f green
-    Write-Host "`t- Begynder installation af Printer 60:"; Sleep -s 5
-    Write-Host "`t`t- Forbereder system.."
+    write-host "[Forbindelse verificeret]".toUpper() -f green
+    write-host "`t- Begynder installation af Printer 60:"; Sleep -s 5
+    write-host "`t`t- Forbereder system.."
     # Variabler   
         $printername = "Printer 60 - Butik"
         $printerfolder = "$env:SystemDrive\Printer\$printername"
@@ -319,26 +219,26 @@ if (Test-Connection  192.168.1.60 -Quiet) {
         else{Remove-item -Path $printerfolder\* -Force -recurse | out-null}
 
     # Downloader driver
-        Write-Host "`t`t- Downloader driver.."
+        write-host "`t`t- Downloader driver.."
         (New-Object net.webclient).Downloadfile($printerdriverlink  , $printerdriverfile)   
 
     # Udpakker driver
-        Write-Host "`t`t- Udpakker driver.."
+        write-host "`t`t- Udpakker driver.."
         Expand-Archive -Path $printerdriverfile -DestinationPath $printerfolder       
         
     #Installer Printer
-        Write-Host "`t`t- Konfigurer Printer:"; sleep -s 5
-        Write-Host "`t`t`t`t- Driverbiblotek"
+        write-host "`t`t- Konfigurer Printer:"; sleep -s 5
+        write-host "`t`t`t`t- Driverbiblotek"
         pnputil.exe -i -a $printerdriverinf | out-null ; sleep -s 5
-        Write-Host "`t`t`t`t- Driver"
+        write-host "`t`t`t`t- Driver"
         Add-PrinterDriver -Name $printerdriver | out-null; sleep -s 5
-        Write-Host "`t`t`t`t- Printerport"
+        write-host "`t`t`t`t- Printerport"
         Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip | out-null; sleep -s 5
-        Write-Host "`t`t`t`t- Printer"
+        write-host "`t`t`t`t- Printer"
         Add-Printer -Name $printername -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
         Stop-Service "Spooler" | Out-Null; sleep -s 5
         Start-Service "Spooler" | Out-Null
-        Write-Host "`t- Printeren er installeret!" -f Green
+        write-host "`t- Printeren er installeret!" -f Green
         
     # Post installation
         
@@ -348,7 +248,7 @@ if (Test-Connection  192.168.1.60 -Quiet) {
         # Slet udpakkede filer, for besparelse af diskplads. driver bibeholdes.
         remove-item "C:\Printer\*" -Exclude "printer_*.zip" -Recurse -Force -ErrorAction Ignore | Out-Null
         
-    }else {Write-Host " [INGEN FORBINDELSE]" -f red; Write-Host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
+    }else {write-host " [INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
     
 
 }
@@ -356,7 +256,7 @@ if (Test-Connection  192.168.1.60 -Quiet) {
 function printer_lager {
 
 # prepare
-    Write-Host "Systemet klargøres.."
+    write-host "Systemet klargøres.."
 
     # Clean spooler
         Stop-Service "Spooler" | out-null; sleep -s 3
@@ -378,12 +278,12 @@ function printer_lager {
         Get-Printer | ? Name -cMatch "OneNote (Desktop)|OneNote for Windows 50|OneNote|Microsoft XPS Document Writer|Microsoft Print to PDF|Fax" | Remove-Printer 
         Get-Printer | ? Name -Match "9310|4132|M507|7131|9330|2365" | Remove-Printer -ea SilentlyContinue
 
-Write-Host "Forbinder til printer 30 (Printer ved Lones bord).. " -NoNewline; Sleep -s 3
+write-host "Forbinder til printer 30 (Printer ved Lones bord).. " -NoNewline; Sleep -s 3
 if (Test-Connection  192.168.1.30 -Quiet) {
-    Write-Host "[Forbindelse verificeret]".toUpper() -f green
-    Write-Host "`t- Begynder installation af Printer 30:"; Sleep -s 5
+    write-host "[Forbindelse verificeret]".toUpper() -f green
+    write-host "`t- Begynder installation af Printer 30:"; Sleep -s 5
 
-    Write-Host "`t`t- Forbereder system.."
+    write-host "`t`t- Forbereder system.."
         $printername = "Printer 30 - Lager"
         $printerfolder = "$env:SystemDrive\Printer\$printername"
         $printerdriver = "Brother MFC-9330CDW Printer"
@@ -398,35 +298,35 @@ if (Test-Connection  192.168.1.30 -Quiet) {
         else{Remove-item -Path $printerfolder\* -Force -recurse | out-null}
 
     # Downloader driver
-        Write-Host "`t`t- Downloader driver.."
+        write-host "`t`t- Downloader driver.."
         (New-Object net.webclient).Downloadfile($printerdriverlink  , $printerdriverfile)   
 
     # Udpakker driver
-        Write-Host "`t`t- Udpakker driver.."
+        write-host "`t`t- Udpakker driver.."
         Expand-Archive -Path $printerdriverfile -DestinationPath $printerfolder    
         
     #Installer Printer
-        Write-Host "`t`t- Konfigurer Printer:"; sleep -s 5
-        Write-Host "`t`t`t`t- Driverbiblotek"
+        write-host "`t`t- Konfigurer Printer:"; sleep -s 5
+        write-host "`t`t`t`t- Driverbiblotek"
         pnputil.exe -i -a $printerdriverinf | out-null ; sleep -s 5
-        Write-Host "`t`t`t`t- Driver"
+        write-host "`t`t`t`t- Driver"
         Add-PrinterDriver -Name $printerdriver | out-null; sleep -s 5
-        Write-Host "`t`t`t`t- Printerport"
+        write-host "`t`t`t`t- Printerport"
         Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip | out-null; sleep -s 5
-        Write-Host "`t`t`t`t- Printer"
+        write-host "`t`t`t`t- Printer"
         Add-Printer -Name $printername -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
         Stop-Service "Spooler" | Out-Null; sleep -s 5
         Start-Service "Spooler" | Out-Null
     
-    Write-Host "`t- Printer 30 er installeret!" -f Green
-}else {Write-Host " [INGEN FORBINDELSE]" -f red; Write-Host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
+    write-host "`t- Printer 30 er installeret!" -f Green
+}else {write-host " [INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
 
-Write-Host "Forbinder til printer 40 (Printer ved Booking-PC).. " -NoNewline; Sleep -s 3
+write-host "Forbinder til printer 40 (Printer ved Booking-PC).. " -NoNewline; Sleep -s 3
 if (Test-Connection  192.168.1.40 -Quiet) {
-            Write-Host "[Forbindelse verificeret]".toUpper() -f green
-            Write-Host "`t- Begynder installation af Printer 40:"; Sleep -s 5
+            write-host "[Forbindelse verificeret]".toUpper() -f green
+            write-host "`t- Begynder installation af Printer 40:"; Sleep -s 5
     
-            Write-Host "`t`t- Forbereder system.."
+            write-host "`t`t- Forbereder system.."
                 $printername = "Printer 40 - Lager"
                 $printerfolder = "$env:SystemDrive\Printer\$printername"
                 $printerdriver = "Brother HL-L2360D series"
@@ -441,27 +341,27 @@ if (Test-Connection  192.168.1.40 -Quiet) {
             else{Remove-item -Path $printerfolder\* -Force -recurse | out-null}
 
         # Downloader driver
-            Write-Host "`t`t- Downloader driver.."
+            write-host "`t`t- Downloader driver.."
             (New-Object net.webclient).Downloadfile($printerdriverlink  , $printerdriverfile)   
 
         # Udpakker driver
-            Write-Host "`t`t- Udpakker driver.."
+            write-host "`t`t- Udpakker driver.."
             Expand-Archive -Path $printerdriverfile -DestinationPath $printerfolder    
             
         #Installer Printer
-            Write-Host "`t`t- Konfigurer Printer:"; sleep -s 5
-            Write-Host "`t`t`t`t- Driverbiblotek"
+            write-host "`t`t- Konfigurer Printer:"; sleep -s 5
+            write-host "`t`t`t`t- Driverbiblotek"
             pnputil.exe -i -a $printerdriverinf | out-null ; sleep -s 5
-            Write-Host "`t`t`t`t- Driver"
+            write-host "`t`t`t`t- Driver"
             Add-PrinterDriver -Name $printerdriver | out-null; sleep -s 5
-            Write-Host "`t`t`t`t- Printerport"
+            write-host "`t`t`t`t- Printerport"
             Add-PrinterPort -Name $printerip -PrinterHostAddress $printerip | Out-null; sleep -s 5
-            Write-Host "`t`t`t`t- Printer"
+            write-host "`t`t`t`t- Printer"
             Add-Printer -Name $printername -PortName $printerip -DriverName $printerdriver -PrintProcessor winprint -Location $printerlocation -Comment "automatiseret af Andreas" | out-null; sleep -s 5
             Stop-Service "Spooler" | Out-Null; sleep -s 5
             Start-Service "Spooler" | Out-Null
     
-        Write-Host "`t- Printer 40 er installeret!" -f Green
+        write-host "`t- Printer 40 er installeret!" -f Green
 
     # Post installation
         
@@ -471,7 +371,7 @@ if (Test-Connection  192.168.1.40 -Quiet) {
         # Slet udpakkede filer, for besparelse af diskplads. driver bibeholdes.
         remove-item "C:\Printer\*" -Exclude "printer_*.zip" -Recurse -Force -ErrorAction Ignore | Out-Null
 
-}else {Write-Host " [INGEN FORBINDELSE]" -f red; Write-Host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
+}else {write-host " [INGEN FORBINDELSE]" -f red; write-host "`tDer er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f red}
 
 
 
@@ -489,16 +389,16 @@ if ($admin_permissions_check) {
 
 do {
     cls
-    "";"";Write-Host "VÆLG EN AF FØLGENDE MULIGHEDER VED AT INDTASTE NUMMERET:" -f yellow
-    Write-Host ""; Write-Host "";
-    Write-Host "Printer installation:"
-    Write-Host "`t1  - Kontor afdeling`t(printer 11, 20, 50)"
-    Write-Host "`t2  - Lager afdeling`t(printer 30, 40)"
-    Write-Host "`t3  - Butiks afdeling`t(printer 60)"
-    #"";"";Write-Host "Andet:"
-    #Write-Host "        [4] - Installation af helt ny PC"
-    "";Write-Host "`t0 - EXIT"
-    Write-Host ""; Write-Host "";
+    "";"";Write-host "VÆLG EN AF FØLGENDE MULIGHEDER VED AT INDTASTE NUMMERET:" -f yellow
+    Write-host ""; Write-host "";
+    Write-host "Printer installation:"
+    Write-host "`t1  - Kontor afdeling`t(printer 11, 20, 50)"
+    Write-host "`t2  - Lager afdeling`t(printer 30, 40)"
+    Write-host "`t3  - Butiks afdeling`t(printer 60)"
+    #"";"";Write-host "Andet:"
+    #Write-host "        [4] - Installation af helt ny PC"
+    "";Write-host "`t0 - EXIT"
+    Write-host ""; Write-host "";
     Write-Host "INDTAST DIT NUMMER HER: " -f yellow -nonewline; ; ;
     $option = Read-Host
     Switch ($option) { 
@@ -514,7 +414,7 @@ while ($option -notin 1..3 )
 else {
 1..99 | % {
     $Warning_message = "POWERSHELL IS NOT RUNNING AS ADMINISTRATOR. Please close this and run this script as administrator."
-    cls; ""; ""; ""; ""; ""; Write-Host $Warning_message -ForegroundColor White -BackgroundColor Red; ""; ""; ""; ""; ""; Start-Sleep 1; cls
-    cls; ""; ""; ""; ""; ""; Write-Host $Warning_message -ForegroundColor White; ""; ""; ""; ""; ""; Start-Sleep 1; cls
+    cls; ""; ""; ""; ""; ""; write-host $Warning_message -ForegroundColor White -BackgroundColor Red; ""; ""; ""; ""; ""; Start-Sleep 1; cls
+    cls; ""; ""; ""; ""; ""; write-host $Warning_message -ForegroundColor White; ""; ""; ""; ""; ""; Start-Sleep 1; cls
 }    
 }
