@@ -16,8 +16,8 @@
 
 
     # Tjek forbindelse til Printer
+    Write-Host "Forbinder til $Name...`t" -NoNewline
     if (Test-Connection  $IPv4 -Quiet) {
-        Write-Host "Forbinder til $Name...`t" -NoNewline
         Start-Sleep -s 3
         Write-Host "[FORBINDELSE VERIFICERET]"
 
@@ -136,7 +136,9 @@
             Write-Host "`t`t- $Name er nu installeret.`n" -f Green
             $ProgressPreference = "Continue" #unhide progressbar
 
-    }
+    }else {
+            Write-Host "[INGEN FORBINDELSE]" 
+            Write-Host "Der er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f Red}
 }
 function Menu-Printer {
 
@@ -162,7 +164,7 @@ function Menu-Printer {
             "";
             Switch ($option) { 
                 0 {exit}
-                1 {
+                1 { # Kontor Afdeling
                     Install-Printer -Name "Printer 11 - Kontor" `
                     -IPv4 "192.168.1.11" `
                     -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1aAFlSwdaEXwYMnZm-7G-rDQcQZX45R4a" `
@@ -184,15 +186,7 @@ function Menu-Printer {
                     -Drivername "HP LaserJet M507 PCL 6 (V3)" `
                     -Driverfilename "hpkoca2a_x64.inf";}
                 
-                2 {
-                    Install-Printer -Name "Printer 60 - Butik" `
-                    -IPv4 "192.168.1.60" `
-                    -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1mURq7zSc6e4o85_IRjXV5k9nuWT1fCk8" `
-                    -Location "Printeren ved kassen" `
-                    -Drivername "ES7131(PCL6)" `
-                    -Driverfilename "OKW3X04V.INF";}
-                
-                3 {
+                2 { # Lager afdeling
                     Install-Printer -Name "Printer 30 - Lager" `
                     -IPv4 "192.168.1.30" `
                     -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1s2o8FHiJ6f4dNW7AyPkWRqJxJ_dFhu6U" `
@@ -206,6 +200,14 @@ function Menu-Printer {
                     -Location "Lagerprinter ved booking" `
                     -Drivername "Brother HL-L2360D series" `
                     -Driverfilename "BROHL13A.INF";}
+                
+                3 { # Butiks afdeling
+                    Install-Printer -Name "Printer 60 - Butik" `
+                    -IPv4 "192.168.1.60" `
+                    -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1mURq7zSc6e4o85_IRjXV5k9nuWT1fCk8" `
+                    -Location "Printeren ved kassen" `
+                    -Drivername "ES7131(PCL6)" `
+                    -Driverfilename "OKW3X04V.INF";}
                              }}
         while ($option -notin 1..3 )}
         
