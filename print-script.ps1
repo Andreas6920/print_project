@@ -1,4 +1,8 @@
-﻿function Install-Printer {
+﻿function Afslut-Printer{
+Add-Type -AssemblyName PresentationFramework
+[System.Windows.MessageBox]::Show("Alle dine printere er nu installeret", "Printer install", "OK", "Info")
+}
+function Install-Printer {
 
     param (
         [Parameter(Mandatory=$true)]
@@ -136,9 +140,12 @@
             Write-Host "`t`t- $Name er nu installeret.`n" -f Green
             $ProgressPreference = "Continue" #unhide progressbar
 
-    }else {
-            Write-Host "[INGEN FORBINDELSE]" 
-            Write-Host "Der er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f Red}
+            Add-Type -AssemblyName PresentationFramework
+            [System.Windows.MessageBox]::Show("Alle dine printere er nu installeret", "Printer install", "OK", "Info")
+            exit;}
+    Else {
+        Write-Host "[INGEN FORBINDELSE]" 
+        Write-Host "Der er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f Red}
 }
 function Menu-Printer {
 
@@ -184,7 +191,9 @@ function Menu-Printer {
                     -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1aAFlSwdaEXwYMnZm-7G-rDQcQZX45R4a" `
                     -Location "HP Printeren i midten af kontoret" `
                     -Drivername "HP LaserJet M507 PCL 6 (V3)" `
-                    -Driverfilename "hpkoca2a_x64.inf";}
+                    -Driverfilename "hpkoca2a_x64.inf";
+                    
+                    Afslut-Printer;exit;}
                 
                 2 { # Lager afdeling
                     Install-Printer -Name "Printer 30 - Lager" `
@@ -199,7 +208,9 @@ function Menu-Printer {
                     -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1uzIMA03CMIvebVwyE7dljLBlrN-fJINl" `
                     -Location "Lagerprinter ved booking" `
                     -Drivername "Brother HL-L2360D series" `
-                    -Driverfilename "BROHL13A.INF";}
+                    -Driverfilename "BROHL13A.INF";
+                    
+                    Afslut-Printer;exit;}
                 
                 3 { # Butiks afdeling
                     Install-Printer -Name "Printer 60 - Butik" `
@@ -207,7 +218,9 @@ function Menu-Printer {
                     -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1mURq7zSc6e4o85_IRjXV5k9nuWT1fCk8" `
                     -Location "Printeren ved kassen" `
                     -Drivername "ES7131(PCL6)" `
-                    -Driverfilename "OKW3X04V.INF";}
+                    -Driverfilename "OKW3X04V.INF";                    
+                    
+                    Afslut-Printer;exit;}
                              }}
         while ($option -notin 1..3 )}
         
