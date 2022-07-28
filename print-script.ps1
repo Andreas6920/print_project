@@ -155,7 +155,7 @@ function Menu-Printer {
     if ($admin_permissions_check) {
 
         do {
-            cls
+            Clear-Host
             "";"";Write-Host "VÆLG EN AF FØLGENDE MULIGHEDER VED AT INDTASTE NUMMERET:" -f yellow
             Write-Host ""; Write-Host "";
             Write-Host "Printer installation " -nonewline; Write-host "Version 2.0:" -f Gray;"";
