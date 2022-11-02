@@ -70,7 +70,7 @@ function Install-Printer {
             Remove-PrinterPort -Name $printerport}}
         
         # Fjern gamle windows printere
-        $printertags = "Fax","OneNote for Windows 10","Microsoft XPS Document Writer", "Microsoft Print to PDF" 
+        $printertags = "Fax", "OneNote for Windows 10", "Microsoft XPS Document Writer", "Microsoft Print to PDF" 
         foreach ($tag in $printertags){
         if (Get-Printer | ? Name -cmatch $tag){
             $printername = (Get-printer | ? name -match $tag).Name
@@ -78,7 +78,7 @@ function Install-Printer {
             Remove-Printer -Name $printername}}
 
         # Fjern gamle jensen company printere
-        $printertags = "9310","4132","M507", "7131","9330", "2365", "Printer 10 - Kontor"
+        $printertags = "9310", "4132", "M507", "7131", "9330", "2365", "Printer 10 - Kontor"
         foreach ($tag in $printertags){
         if (Get-Printer | ? Name -match $tag){
             $printername = (Get-printer | ? name -match $tag).Name
