@@ -209,6 +209,13 @@ function Menu-Printer {
                     -Location "Lagerprinter ved booking" `
                     -Drivername "Brother HL-L2360D series" `
                     -Driverfilename "BROHL13A.INF";
+
+                    Install-Printer -Name "Printer 70 - Lager" `
+                    -IPv4 "192.168.1.70" `
+                    -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1OoS5fvj9S_J8tyYY-U7wY4C_QcuXR3dD" `
+                    -Location "Printeren til følgesedler" `
+                    -Drivername "Lexmark MS820 Series" `
+                    -Driverfilename "LMU03o40.inf";                    
                     
                     Afslut-Printer;exit;}
                 
