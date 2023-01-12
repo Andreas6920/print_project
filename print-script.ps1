@@ -26,10 +26,9 @@
     Start-Sleep -S 3
 
 }
-function Afslut-Printer{
-Add-Type -AssemblyName PresentationFramework
-[System.Windows.MessageBox]::Show("Alle dine printere er nu installeret", "Printer install", "OK", "Info")
-}
+
+function Afslut-Printer{msg * "Alle dine printere er nu installeret"}
+
 function Install-Printer {
 
     param (
@@ -92,7 +91,7 @@ function Install-Printer {
         if (Get-Printer | ? Name -match $tag){
             $printername = (Get-printer | ? name -match $tag).Name
             $printerport = (Get-printer | ? name -match $tag).PortName
-            Write-Host "`t`t`t`t- Fjerner printer: $printername"
+            Write-Host "`t`t`t`t- Fjerner gamle installation"
             Remove-Printer -Name $printername
             Start-Sleep -S 2
             Remove-PrinterPort -Name $printerport}}
@@ -155,10 +154,10 @@ function Install-Printer {
             Write-Host "`t`t`t`t- Opsætter printer"
             Add-Printer -Name $Name -PortName $IPv4 -DriverName $Drivername -PrintProcessor winprint -Location $Location -Comment "automatiseret af Andreas" | out-null; sleep -s 5
             Start-sleep -S 3;
-            Write-Host "`t`t`t`t- Indstiller en sides udskrift fremfor dobbelsiddet"
+            Write-Host "`t`t`t`t- Indstiller én sides udskrift fremfor dobbelsiddet"
             Get-Printer -Name $Name | Set-PrintConfiguration -DuplexingMode OneSided
             Start-sleep -S 3;
-            Write-Host "`t`t`t`t- Fjerner downloadede filer"
+            Write-Host "`t`t`t`t- Rengør disk"
             Get-childitem -path $printerfolder -Directory | Remove-Item -Recurse -Force | Out-Null
             Get-childitem -path $printerfolder | ? Name -notmatch "$Name|\d{1,4}\.\d{1,2}\.\d{1,2}.zip" | Remove-Item -Force | Out-Null
             Start-sleep -S 3;
@@ -166,17 +165,13 @@ function Install-Printer {
             Start-Service  -Name "Spooler"
             Start-sleep -S 3;
             Write-Host "`t`t- $Name er nu installeret.`n" -f Green
-            $ProgressPreference = "Continue" #unhide progressbar
-
-            Add-Type -AssemblyName PresentationFramework
-            [System.Windows.MessageBox]::Show("Alle dine printere er nu installeret", "Printer install", "OK", "Info")
-            exit;}
+            $ProgressPreference = "Continue"}
     Else {
         Write-Host "[INGEN FORBINDELSE]" 
         Write-Host "Der er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f Red}
 }
 
-function Menu-Printer {
+
 
     #tjek efter admin rettigheder
     $admin_permissions_check = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
@@ -203,14 +198,14 @@ function Menu-Printer {
                 0 {exit}
                 1 { # Kontor Afdeling
                     Install-Printer -Name "Printer 11 - Kontor" `
-                    -IPv4 "192.168.1.11" `
+                    -IPv4 "1.1.1.1" `
                     -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1aAFlSwdaEXwYMnZm-7G-rDQcQZX45R4a" `
                     -Location "Printer bag Lone B" `
                     -Drivername "HP LaserJet M507 PCL 6 (V3)" `
                     -Driverfilename "hpkoca2a_x64.inf";
 
                     Install-Printer -Name "Printer 20 - Kontor" `
-                    -IPv4 "192.168.1.20" `
+                    -IPv4 "1.1.1.1" `
                     -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1mW3MC4ODo77bfyWa3sGotITFsaZICvwi" `
                     -Location "Canon printer med scanner" `
                     -Drivername "Canon Generic Plus PCL6" `
@@ -267,6 +262,7 @@ function Menu-Printer {
            1..99 | % {$Warning_message = "POWERSHELL IS NOT RUNNING AS ADMINISTRATOR. Please close this and run this script as administrator."
            cls; ""; ""; ""; ""; ""; write-host $Warning_message -ForegroundColor White -BackgroundColor Red; ""; ""; ""; ""; ""; Start-Sleep 1; cls
            cls; ""; ""; ""; ""; ""; write-host $Warning_message -ForegroundColor White; ""; ""; ""; ""; ""; Start-Sleep 1; cls} }
-}
+
+
 
 Menu-Printer
