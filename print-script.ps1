@@ -1,4 +1,32 @@
-﻿function Afslut-Printer{
+﻿function Install-Navipriner {
+    
+    # Variables 
+    Write-Host "Opsætter printer til Navision.."
+    $link = "https://nphardwareconnector.blob.core.windows.net/production/Setup.exe"
+    $path = $($env:TMP)+"\"+(Split-Path $link -Leaf)
+    $desktop = [Environment]::GetFolderPath("Desktop")
+    $startup = [Environment]::GetFolderPath("Startup")
+    $shortcut = Join-Path $desktop "NP Hardware Connector.lnk"
+
+    # Install
+    Write-host "`t`t - Downloader Programmet.."
+    Start-Sleep -S 1
+    (New-Object net.webclient).Downloadfile("$link", "$path")
+    Write-host "`t`t - Installere Programmet.."
+    Start-Sleep -S 1
+    Start $path
+
+    # Create startup task
+    Write-host "`t`t - Sætter til at starte automatisk.."
+    Start-Sleep -S 3
+    while (!(Test-Path $shortcut)) { Start-Sleep -S 1 }
+    Copy-Item $shortcut $startup
+
+    Write-Host "`t- Navision printer opsætning er nu installeret."
+    Start-Sleep -S 3
+
+}
+function Afslut-Printer{
 Add-Type -AssemblyName PresentationFramework
 [System.Windows.MessageBox]::Show("Alle dine printere er nu installeret", "Printer install", "OK", "Info")
 }
@@ -147,6 +175,7 @@ function Install-Printer {
         Write-Host "[INGEN FORBINDELSE]" 
         Write-Host "Der er ikke forbindelse til printeren, test om printeren er i dvale eller om du/printeren har internet!" -f Red}
 }
+
 function Menu-Printer {
 
     #tjek efter admin rettigheder
@@ -228,8 +257,10 @@ function Menu-Printer {
                     -Driverfilename "OKW3X04V.INF";                    
                     
                     Afslut-Printer;exit;}
+                4 { # Installer Navision printer integration
+                    Install-Navipriner; exit;}
                              }}
-        while ($option -notin 1..3 )}
+        while ($option -notin 1..4 )}
         
     else {
            1..99 | % {$Warning_message = "POWERSHELL IS NOT RUNNING AS ADMINISTRATOR. Please close this and run this script as administrator."
