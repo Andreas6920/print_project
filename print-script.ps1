@@ -272,6 +272,7 @@ function Install-Printer {
                 Install-Naviprinter;
                 Afslut-Printer;
                  exit;}
+                 
              4 { # Installer Navision printer integration
                 Install-Naviprinter;
                 exit;}
