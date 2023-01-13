@@ -201,7 +201,7 @@ Else {
             Clear-Host
             Write-Host ""
             Write-Host ""
-            Write-Host "PRINTERPROGRAM, version 2.3" -f yellow
+            Write-Host "PRINTERPROGRAM, version 2.5" -f yellow
             Write-Host ""
             Write-Host ""
             Write-Host "`tValgmuligheder:"
