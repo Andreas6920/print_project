@@ -204,7 +204,7 @@ function Install-Printer {
          Write-Host "`t1`t-`tKontor afdeling`t(printer 11, 20, 50)"
          Write-Host "`t2 `t-`tLager afdeling`t(printer 30, 40, 70)"
          Write-Host "`t3`t-`tButiks afdeling`t(printer 60)"
-         Write-Host "`t4`t-`tInstallér Navision printer integration"
+         Write-Host "`t4`t-`tNavision printer integration"
          "";Write-Host "`t0`t-`tEXIT"
          "";"";
          Write-Host "INDTAST DIT NUMMER HER: " -f yellow -nonewline; ; ;
@@ -272,7 +272,7 @@ function Install-Printer {
                 Install-Naviprinter;
                 Afslut-Printer;
                  exit;}
-                 
+
              4 { # Installer Navision printer integration
                 Install-Naviprinter;
                 exit;}
