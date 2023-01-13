@@ -281,7 +281,13 @@ function Install-Printer {
      while ($option -notin 1..4 )}
      
  else {
-        1..99 | % {$Warning_message = "POWERSHELL IS NOT RUNNING AS ADMINISTRATOR. Please close this and run this script as administrator."
-        cls; ""; ""; ""; ""; ""; write-host $Warning_message -ForegroundColor White -BackgroundColor Red; ""; ""; ""; ""; ""; Start-Sleep 1; cls
-        cls; ""; ""; ""; ""; ""; write-host $Warning_message -ForegroundColor White; ""; ""; ""; ""; ""; Start-Sleep 1; cls} }
+        Write-host ""
+        Write-host "`t" -nonewline
+        Write-host "Du har ikke åbnet PowerShell som administrator." -b red -f white
+        Write-host "`t" -nonewline
+        Write-host 'Luk dette vindue og vælg "Windows PowerShell (admin)"'  -b red -f white
+        Write-host ""
+     }
+
+
 

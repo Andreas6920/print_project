@@ -196,7 +196,7 @@ function Install-Printer {
  $admin_permissions_check = $admin_permissions_check.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
  if ($admin_permissions_check) {
 
-     do {
+    do {
          Clear-Host
          "";"";Write-Host "VÆLG EN AF FØLGENDE MULIGHEDER VED AT INDTASTE NUMMERET:" -f yellow
          Write-Host ""; Write-Host "";
@@ -278,10 +278,13 @@ function Install-Printer {
                 msg * "Navision printer integration installeret";
                 exit;}
                           }}
-     while ($option -notin 1..4 )}
+    while ($option -notin 1..4 )}
      
- else {
-        1..99 | % {$Warning_message = "POWERSHELL IS NOT RUNNING AS ADMINISTRATOR. Please close this and run this script as administrator."
-        cls; ""; ""; ""; ""; ""; write-host $Warning_message -ForegroundColor White -BackgroundColor Red; ""; ""; ""; ""; ""; Start-Sleep 1; cls
-        cls; ""; ""; ""; ""; ""; write-host $Warning_message -ForegroundColor White; ""; ""; ""; ""; ""; Start-Sleep 1; cls} }
-
+    else {
+            Write-host ""
+            Write-host "`t" -nonewline
+            Write-host "Du har ikke åbnet PowerShell som administrator." -b red -f white
+            Write-host "`t" -nonewline
+            Write-host 'Luk dette vindue og vælg "Windows PowerShell (admin)"'  -b red -f white
+            Write-host ""
+         }
