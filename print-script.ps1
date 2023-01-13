@@ -275,7 +275,7 @@ function Install-Printer {
 
              4 { # Installer Navision printer integration
                 Install-Naviprinter;
-                msg * "Navision printer integration installeret"
+                msg * "Navision printer integration installeret";
                 exit;}
                           }}
      while ($option -notin 1..4 )}
