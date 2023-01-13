@@ -189,7 +189,7 @@ function Install-Printer {
             Write-Host ""; Write-Host "";
             Write-Host "Printer installation " -nonewline; Write-host "Version 2.1:" -f Gray;"";
             Write-Host "`t1`t-`tKontor afdeling`t(printer 11, 20, 50)"
-            Write-Host "`t2 `t-`tLager afdeling`t(printer 30, 40)"
+            Write-Host "`t2 `t-`tLager afdeling`t(printer 30, 40, 70)"
             Write-Host "`t3`t-`tButiks afdeling`t(printer 60)"
             Write-Host "`t4`t-`tInstallér Navision printer integration"
             #"";"";Write-Host "Andet:"
