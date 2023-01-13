@@ -273,8 +273,8 @@ function Install-Printer {
                 Afslut-Printer;
                  exit;}
              4 { # Installer Navision printer integration
-                 Install-Naviprinter;
-                 exit;}
+                Install-Naviprinter;
+                exit;}
                           }}
      while ($option -notin 1..4 )}
      
