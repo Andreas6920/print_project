@@ -1,7 +1,7 @@
 ﻿function Install-Naviprinter {
     
     # Variables 
-        Write-Host "Opsætter printer til Navision.."
+        Write-Host "    Opsætter printer til Navision.."
         $link = "https://nphardwareconnector.blob.core.windows.net/production/Setup.exe"
         $path = Join-Path -Path $env:TMP -ChildPath (Split-Path $link -Leaf)
         $desktop = [Environment]::GetFolderPath("Desktop")
@@ -72,7 +72,7 @@ function Install-Printer {
         Start-Sleep -s 3
         $system = $env:SystemDrive
         $system32 = [Environment]::GetFolderPath("System")
-        $printerfolder = Join-path -Path $system -ChildPath "printer\$name"
+        $printerfolder = Join-path -Path $system -ChildPath "Printer\$name"
         $printerdriverfile = Join-path -path $printerfolder -ChildPath "$Name.zip"
         $spoolfolder = Join-path -path $system32 -ChildPath "spool\PRINTERS"
 
