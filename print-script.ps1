@@ -29,7 +29,7 @@
 
 }
 
-function Afslut-Printer {
+function Invoke-PrinterMsgbox {
 
     # Hvor mange printer er installeret
     [int]$option
@@ -234,7 +234,7 @@ function Install-Printer {
                     -Drivername "HP LaserJet M507 PCL 6 (V3)" `
                     -Driverfilename "hpkoca2a_x64.inf";
                 Install-Naviprinter; 
-                Afslut-Printer;
+                Invoke-PrinterMsgbox;
                 exit;}
              
              2 { # Lager afdeling
@@ -259,7 +259,7 @@ function Install-Printer {
                     -Drivername "Lexmark MS820 Series" `
                     -Driverfilename "LMU03o40.inf";                    
                 Install-Naviprinter;
-                Afslut-Printer;
+                Invoke-PrinterMsgbox;
                 exit;}
              
              3 { # Butiks afdeling
@@ -270,7 +270,7 @@ function Install-Printer {
                     -Drivername "ES7131(PCL6)" `
                     -Driverfilename "OKW3X04V.INF";                    
                 Install-Naviprinter;
-                Afslut-Printer;
+                Invoke-PrinterMsgbox;
                  exit;}
 
              4 { # Installer Navision printer integration
