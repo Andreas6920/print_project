@@ -203,63 +203,67 @@ function Install-Printer {
                 0 {exit}
                 1 { # Kontor Afdeling
                     Install-Printer -Name "Printer 11 - Kontor" `
-                    -IPv4 "192.168.1.11" `
-                    -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1aAFlSwdaEXwYMnZm-7G-rDQcQZX45R4a" `
-                    -Location "Printer bag Lone B" `
-                    -Drivername "HP LaserJet M507 PCL 6 (V3)" `
-                    -Driverfilename "hpkoca2a_x64.inf";
+                        -IPv4 "192.168.1.11" `
+                        -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1aAFlSwdaEXwYMnZm-7G-rDQcQZX45R4a" `
+                        -Location "Printer bag Lone B" `
+                        -Drivername "HP LaserJet M507 PCL 6 (V3)" `
+                        -Driverfilename "hpkoca2a_x64.inf";
 
                     Install-Printer -Name "Printer 20 - Kontor" `
-                    -IPv4 "192.168.1.20" `
-                    -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1mW3MC4ODo77bfyWa3sGotITFsaZICvwi" `
-                    -Location "Canon printer med scanner" `
-                    -Drivername "Canon Generic Plus PCL6" `
-                    -Driverfilename "Cnp60MA64.INF";
+                        -IPv4 "192.168.1.20" `
+                        -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1mW3MC4ODo77bfyWa3sGotITFsaZICvwi" `
+                        -Location "Canon printer med scanner" `
+                        -Drivername "Canon Generic Plus PCL6" `
+                        -Driverfilename "Cnp60MA64.INF";
 
                     Install-Printer -Name "Printer 50 - Kontor" `
-                    -IPv4 "192.168.1.50" `
-                    -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1aAFlSwdaEXwYMnZm-7G-rDQcQZX45R4a" `
-                    -Location "HP Printeren i midten af kontoret" `
-                    -Drivername "HP LaserJet M507 PCL 6 (V3)" `
-                    -Driverfilename "hpkoca2a_x64.inf";
-                    
-                    Afslut-Printer; Install-Naviprinter; exit;}
+                        -IPv4 "192.168.1.50" `
+                        -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1aAFlSwdaEXwYMnZm-7G-rDQcQZX45R4a" `
+                        -Location "HP Printeren i midten af kontoret" `
+                        -Drivername "HP LaserJet M507 PCL 6 (V3)" `
+                        -Driverfilename "hpkoca2a_x64.inf";
+                    Afslut-Printer;
+                    Install-Naviprinter; 
+                    exit;}
                 
                 2 { # Lager afdeling
                     Install-Printer -Name "Printer 30 - Lager" `
-                    -IPv4 "192.168.1.30" `
-                    -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1s2o8FHiJ6f4dNW7AyPkWRqJxJ_dFhu6U" `
-                    -Location "Lagerprinter med scanner" `
-                    -Drivername "Brother MFC-9330CDW Printer" `
-                    -Driverfilename "BRPRC12A.INF";
+                        -IPv4 "192.168.1.30" `
+                        -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1s2o8FHiJ6f4dNW7AyPkWRqJxJ_dFhu6U" `
+                        -Location "Lagerprinter med scanner" `
+                        -Drivername "Brother MFC-9330CDW Printer" `
+                        -Driverfilename "BRPRC12A.INF";
                 
                     Install-Printer -Name "Printer 40 - Lager" `
-                    -IPv4 "192.168.1.40" `
-                    -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1uzIMA03CMIvebVwyE7dljLBlrN-fJINl" `
-                    -Location "Lagerprinter ved booking" `
-                    -Drivername "Brother HL-L2360D series" `
-                    -Driverfilename "BROHL13A.INF";
+                        -IPv4 "192.168.1.40" `
+                        -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1uzIMA03CMIvebVwyE7dljLBlrN-fJINl" `
+                        -Location "Lagerprinter ved booking" `
+                        -Drivername "Brother HL-L2360D series" `
+                        -Driverfilename "BROHL13A.INF";
 
                     Install-Printer -Name "Printer 70 - Lager" `
-                    -IPv4 "192.168.1.70" `
-                    -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1OoS5fvj9S_J8tyYY-U7wY4C_QcuXR3dD" `
-                    -Location "Printeren til følgesedler" `
-                    -Drivername "Lexmark MS820 Series" `
-                    -Driverfilename "LMU03o40.inf";                    
-                    
-                    Afslut-Printer; Install-Naviprinter; exit;}
+                        -IPv4 "192.168.1.70" `
+                        -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1OoS5fvj9S_J8tyYY-U7wY4C_QcuXR3dD" `
+                        -Location "Printeren til følgesedler" `
+                        -Drivername "Lexmark MS820 Series" `
+                        -Driverfilename "LMU03o40.inf";                    
+                    Afslut-Printer;
+                    Install-Naviprinter;
+                    exit;}
                 
                 3 { # Butiks afdeling
                     Install-Printer -Name "Printer 60 - Butik" `
-                    -IPv4 "192.168.1.60" `
-                    -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1mURq7zSc6e4o85_IRjXV5k9nuWT1fCk8" `
-                    -Location "Printeren ved kassen" `
-                    -Drivername "ES7131(PCL6)" `
-                    -Driverfilename "OKW3X04V.INF";                    
-                    
-                    Afslut-Printer; Install-Naviprinter; exit;}
+                        -IPv4 "192.168.1.60" `
+                        -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1mURq7zSc6e4o85_IRjXV5k9nuWT1fCk8" `
+                        -Location "Printeren ved kassen" `
+                        -Drivername "ES7131(PCL6)" `
+                        -Driverfilename "OKW3X04V.INF";                    
+                    Afslut-Printer;
+                    Install-Naviprinter;
+                    exit;}
                 4 { # Installer Navision printer integration
-                    Install-Naviprinter; exit;}
+                    Install-Naviprinter;
+                    exit;}
                              }}
         while ($option -notin 1..4 )}
         
