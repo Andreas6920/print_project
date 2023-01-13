@@ -200,7 +200,7 @@ Else {
             Clear-Host
             Write-Host ""
             Write-Host ""
-            Write-Host "PRINTERPROGRAM, version 2.3" -f yellow
+            Write-Host "PRINTERPROGRAM, version 2.4" -f yellow
             Write-Host ""
             Write-Host ""
             Write-Host "`tValgmuligheder:"
@@ -218,7 +218,7 @@ Else {
             "";
             Switch ($option) { 
                 0 {exit}
-                
+
                 1 { # Kontor Afdeling
                     Install-Printer -Name "Printer 11 - Kontor" `
                         -IPv4 "192.168.1.11" `
@@ -228,18 +228,18 @@ Else {
                         -Driverfilename "hpkoca2a_x64.inf";
 
                     Install-Printer -Name "Printer 20 - Kontor" `
-                            -IPv4 "192.168.1.20" `
-                            -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1mW3MC4ODo77bfyWa3sGotITFsaZICvwi" `
-                            -Location "Canon printer med scanner" `
-                            -Drivername "Canon Generic Plus PCL6" `
-                            -Driverfilename "Cnp60MA64.INF";
+                        -IPv4 "192.168.1.20" `
+                        -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1mW3MC4ODo77bfyWa3sGotITFsaZICvwi" `
+                        -Location "Canon printer med scanner" `
+                        -Drivername "Canon Generic Plus PCL6" `
+                        -Driverfilename "Cnp60MA64.INF";
 
                     Install-Printer -Name "Printer 50 - Kontor" `
-                            -IPv4 "192.168.1.50" `
-                            -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1aAFlSwdaEXwYMnZm-7G-rDQcQZX45R4a" `
-                            -Location "HP Printeren i midten af kontoret" `
-                            -Drivername "HP LaserJet M507 PCL 6 (V3)" `
-                            -Driverfilename "hpkoca2a_x64.inf";
+                        -IPv4 "192.168.1.50" `
+                        -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1aAFlSwdaEXwYMnZm-7G-rDQcQZX45R4a" `
+                        -Location "HP Printeren i midten af kontoret" `
+                        -Drivername "HP LaserJet M507 PCL 6 (V3)" `
+                        -Driverfilename "hpkoca2a_x64.inf";
                     Install-Naviprinter; 
                     Invoke-PrinterMsgbox;
                 exit;}
