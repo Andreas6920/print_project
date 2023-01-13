@@ -1,33 +1,38 @@
-﻿function Install-Navipriner {
+﻿function Install-Naviprinter {
     
-    # Variables 
-    Write-Host "Opsætter printer til Navision.."
-    $link = "https://nphardwareconnector.blob.core.windows.net/production/Setup.exe"
-    $path = $($env:TMP)+"\"+(Split-Path $link -Leaf)
-    $desktop = [Environment]::GetFolderPath("Desktop")
-    $startup = [Environment]::GetFolderPath("Startup")
-    $shortcut = Join-Path $desktop "NP Hardware Connector.lnk"
+       # Variables 
+       Write-Host "Opsætter printer til Navision.."
+       $link = "https://nphardwareconnector.blob.core.windows.net/production/Setup.exe"
+       $path = $($env:TMP)+"\"+(Split-Path $link -Leaf)
+       $desktop = [Environment]::GetFolderPath("Desktop")
+       $startup = [Environment]::GetFolderPath("Startup")
+       $shortcut = Join-Path $desktop "NP Hardware Connector.lnk"
+        # [Environment]::GetFolderPath("LocalApplicationData")
 
-    # Install
-    Write-host "`t`t - Downloader Programmet.."
-    Start-Sleep -S 1
-    (New-Object net.webclient).Downloadfile("$link", "$path")
-    Write-host "`t`t - Installere Programmet.."
-    Start-Sleep -S 1
-    Start $path
-
-    # Create startup task
-    Write-host "`t`t - Sætter til at starte automatisk.."
-    Start-Sleep -S 3
-    while (!(Test-Path $shortcut)) { Start-Sleep -S 1 }
-    Copy-Item $shortcut $startup
-
-    Write-Host "`t- Navision printer opsætning er nu installeret."
-    Start-Sleep -S 3
+       # Install
+       if (!(Test-Path $shortcut)) {
+       Write-host "`t`t - Downloader Programmet.."
+       Start-Sleep -S 1
+       (New-Object net.webclient).Downloadfile("$link", "$path")
+       Write-host "`t`t - Installere Programmet.."
+       Get-Process | Where-Object { $_.Name -match "NP Hardware Connector" } | Select-Object -First 1 | Stop-Process
+       Start-Sleep -S 1
+       Start-Process -Path $path}
+   
+       # Create startup task
+       Write-host "`t`t - Sætter til at starte automatisk.."
+       Start-Sleep -S 3
+       while (!(Test-Path $shortcut)) { Start-Sleep -S 1 }
+       Copy-Item $shortcut $startup  
+       Write-Host "`t`t- Navision printer opsætning er nu installeret." -f Green
+       Start-Sleep -S 3       
 
 }
 
-function Afslut-Printer{msg * "Alle dine printere er nu installeret"}
+function Afslut-Printer {
+    
+    
+msg * "Alle dine printere er nu installeret"}
 
 function Install-Printer {
 
@@ -182,7 +187,7 @@ function Install-Printer {
             Clear-Host
             "";"";Write-Host "VÆLG EN AF FØLGENDE MULIGHEDER VED AT INDTASTE NUMMERET:" -f yellow
             Write-Host ""; Write-Host "";
-            Write-Host "Printer installation " -nonewline; Write-host "Version 2.0:" -f Gray;"";
+            Write-Host "Printer installation " -nonewline; Write-host "Version 2.1:" -f Gray;"";
             Write-Host "`t1`t-`tKontor afdeling`t(printer 11, 20, 50)"
             Write-Host "`t2 `t-`tLager afdeling`t(printer 30, 40)"
             Write-Host "`t3`t-`tButiks afdeling`t(printer 60)"
@@ -198,14 +203,14 @@ function Install-Printer {
                 0 {exit}
                 1 { # Kontor Afdeling
                     Install-Printer -Name "Printer 11 - Kontor" `
-                    -IPv4 "1.1.1.1" `
+                    -IPv4 "192.168.1.11" `
                     -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1aAFlSwdaEXwYMnZm-7G-rDQcQZX45R4a" `
                     -Location "Printer bag Lone B" `
                     -Drivername "HP LaserJet M507 PCL 6 (V3)" `
                     -Driverfilename "hpkoca2a_x64.inf";
 
                     Install-Printer -Name "Printer 20 - Kontor" `
-                    -IPv4 "1.1.1.1" `
+                    -IPv4 "192.168.1.20" `
                     -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1mW3MC4ODo77bfyWa3sGotITFsaZICvwi" `
                     -Location "Canon printer med scanner" `
                     -Drivername "Canon Generic Plus PCL6" `
@@ -218,7 +223,7 @@ function Install-Printer {
                     -Drivername "HP LaserJet M507 PCL 6 (V3)" `
                     -Driverfilename "hpkoca2a_x64.inf";
                     
-                    Afslut-Printer;exit;}
+                    Afslut-Printer; Install-Naviprinter; exit;}
                 
                 2 { # Lager afdeling
                     Install-Printer -Name "Printer 30 - Lager" `
@@ -242,7 +247,7 @@ function Install-Printer {
                     -Drivername "Lexmark MS820 Series" `
                     -Driverfilename "LMU03o40.inf";                    
                     
-                    Afslut-Printer;exit;}
+                    Afslut-Printer; Install-Naviprinter; exit;}
                 
                 3 { # Butiks afdeling
                     Install-Printer -Name "Printer 60 - Butik" `
@@ -252,9 +257,9 @@ function Install-Printer {
                     -Drivername "ES7131(PCL6)" `
                     -Driverfilename "OKW3X04V.INF";                    
                     
-                    Afslut-Printer;exit;}
+                    Afslut-Printer; Install-Naviprinter; exit;}
                 4 { # Installer Navision printer integration
-                    Install-Navipriner; exit;}
+                    Install-Naviprinter; exit;}
                              }}
         while ($option -notin 1..4 )}
         
@@ -263,6 +268,3 @@ function Install-Printer {
            cls; ""; ""; ""; ""; ""; write-host $Warning_message -ForegroundColor White -BackgroundColor Red; ""; ""; ""; ""; ""; Start-Sleep 1; cls
            cls; ""; ""; ""; ""; ""; write-host $Warning_message -ForegroundColor White; ""; ""; ""; ""; ""; Start-Sleep 1; cls} }
 
-
-
-Menu-Printer
