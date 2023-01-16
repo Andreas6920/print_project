@@ -292,9 +292,9 @@ Else {
         Write-host "`t" -nonewline
         Write-host "Du har ikke åbnet PowerShell som administrator." -b red -f white
         Write-host "`t" -nonewline
-        Write-host 'Luk dette vindue og vælg "Windows PowerShell (admin)"'  -b red -f white
+        Write-host 'Luk dette vindue og vælg "Windows PowerShell (Admin)"'  -b red -f white
         Write-host ""
         Write-host "`t" -nonewline
-        Write-host 'Har du husket at klikke på start med din HØJRE mussetast?'  -b red -f white
+        Write-host 'Har du husket at klikke på start med din HØJRE musetast?'  -b red -f white
         Write-host ""
         }
