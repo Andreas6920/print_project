@@ -294,4 +294,7 @@ Else {
         Write-host "`t" -nonewline
         Write-host 'Luk dette vindue og vælg "Windows PowerShell (admin)"'  -b red -f white
         Write-host ""
+        Write-host "`t" -nonewline
+        Write-host 'Har du husket at klikke på start med din HØJRE mussetast?'  -b red -f white
+        Write-host ""
         }
