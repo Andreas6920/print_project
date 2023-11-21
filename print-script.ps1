@@ -208,7 +208,7 @@ Else {
             Write-Host ""
             Write-Host "`t1    -    Kontor afdeling`t(printer 11, 20, 50)"
             Write-Host "`t2    -    Lager afdeling`t(printer 30, 40, 70)"
-            Write-Host "`t3    -    Butiks afdeling`t(printer 60)"
+            Write-Host "`t3    -    Butiks afdeling`t(printer 60, 80)"
             Write-Host "`t4    -    Installér Navision printer integration"
             Write-Host ""
             Write-Host "`t0    -    EXIT"
@@ -276,9 +276,18 @@ Else {
                         -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=1mURq7zSc6e4o85_IRjXV5k9nuWT1fCk8" `
                         -Location "Printeren ved kassen" `
                         -Drivername "ES7131(PCL6)" `
-                        -Driverfilename "OKW3X04V.INF";                    
+                        -Driverfilename "OKW3X04V.INF";    
+
+                    Install-Printer -Name "Printer 80 - Butik" `
+                        -IPv4 "192.168.1.80" `
+                        -Driverlink "https://drive.google.com/uc?export=download&confirm=uc-download-link&id=15OTs4jA9-c6xgS1xjU3Vk4yEwkLHfJm9" `
+                        -Location "Farveprinteren ved kassen" `
+                        -Drivername "HP Color Laser MFP 178 179" `
+                        -Driverfilename "sht13c.INF";
                     Install-Naviprinter;
                     Invoke-PrinterMsgbox;
+
+
                     exit;}
                 
                 4 { # Installer Navision printer integration
