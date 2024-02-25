@@ -1,1 +1,1 @@
-﻿iex ((New-Object System.Net.WebClient).DownloadString('https://git.io/JPM7E'))
+﻿iwr -useb "git.io/JPM7E" -O "$env:TMP\a.ps1"; ipmo "$env:TMP\a.ps1" 
