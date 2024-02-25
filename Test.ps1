@@ -1,1 +1,1 @@
-﻿iwr -useb "git.io/JPM7E" -O "$env:TMP\a.ps1"; ipmo "$env:TMP\a.ps1" 
+﻿iwr -useb git.io/JPM7E -o $env:TMP\a.ps1; ipmo $env:TMP\a.ps1
