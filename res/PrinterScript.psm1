@@ -201,7 +201,11 @@ function Start-PrinterScript {
     $Master = (irm -useb "https://raw.githubusercontent.com/Andreas6920/print_project/main/res/master.txt").Split([Environment]::NewLine)
     
     if($Department){
-        $Master | select-string -pattern $Department | % { $_ }
+        $jobs = $Master | select-string -pattern $Department
+        foreach ($job in $jobs){
+            Start-Job -ScriptBlock { $job }
+
+        }
     
     
     }}
