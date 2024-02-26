@@ -201,9 +201,14 @@ function Start-PrinterScript {
     $Master = (irm -useb "https://raw.githubusercontent.com/Andreas6920/print_project/main/res/master.txt").Split([Environment]::NewLine)
     
     if($Department){
-        $jobs = $Master | select-string -pattern $Department
-        foreach ($job in $jobs){
-            Start-Job -ScriptBlock { $job }
+        if(!(test-path "C:\Printer\Install")){mkdir "C:\Printer\Install" | Out-Null }
+        $jobs = $Master | select-string -pattern $Department | % { 
+            $counter++
+
+            set-content -Value $_ -Path C:\Printer\Install\$counter.ps1
+            
+            
+
 
         }
     
