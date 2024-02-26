@@ -191,6 +191,7 @@ function Install-Printer {
 function Start-PrinterScript {
     param (
         [Parameter(Mandatory=$false)]
+        [ValidateSet("Kontor", "Lager", "Butik")]
         [string]$Department,
         [Parameter(Mandatory=$false)]
         [string]$Number,
@@ -203,7 +204,7 @@ function Start-PrinterScript {
     if($Department){
         $ScriptFolderPath = "C:\Printer\Install\"
         mkdir $ScriptFolderPath -Force | Out-Null; Remove-item $ScriptFolderPath\* -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
-        $Master | select-string -pattern $Department | %{$counter++; set-content -Value $_ -Path $ScriptFolderPath\job$counter.ps1}
+        $Master | select-string -pattern $Department | ForEach-Object {$counter++; set-content -Value $_ -Path $ScriptFolderPath\job$counter.ps1}
         
         Start-Job -Name "Printer Preparation" -ScriptBlock {Start-PrinterPreparation}
         Wait-Job -Name "Printer Preparation"
@@ -214,8 +215,21 @@ function Start-PrinterScript {
             Start-Job -Name $JobName -FilePath $ScriptFile}
         }
     
+    if($All){
+
+        $ScriptFolderPath = "C:\Printer\Install\"
+        mkdir $ScriptFolderPath -Force | Out-Null; Remove-item $ScriptFolderPath\* -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+        $Master | ForEach-Object {$counter++; set-content -Value $_ -Path $ScriptFolderPath\job$counter.ps1}
+        
+        Start-Job -Name "Printer Preparation" -ScriptBlock {Start-PrinterPreparation}
+        Wait-Job -Name "Printer Preparation"
+
+        $ScriptFiles = (Get-ChildItem -Path $ScriptFolderPath -Filter *.ps1).FullName
+        Foreach ($ScriptFile in $ScriptFiles) {
+            $JobName = (get-content $ScriptFile).Split('"')[1].Trim()
+            Start-Job -Name $JobName -FilePath $ScriptFile}
     
-    
+    }
     
     
     }
