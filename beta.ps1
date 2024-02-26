@@ -11,7 +11,6 @@
     if (Get-Module -ListAvailable -Name $filename){ Import-module -name $filename}
 
 
-    Start-Job -Name "Preparation" {Start-PrinterPreparation}
-    Wait-Job -Name "Preparation"
+    Start-PrinterPreparation | Out-Null
     Start-PrinterScript -Department Lager
     

@@ -206,9 +206,4 @@ function Start-PrinterScript {
     
     }}
 
-    Start-PrinterScript -Department butik
 
-
-
-
-#Start-PrinterScript -Department Butik
