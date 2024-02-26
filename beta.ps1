@@ -10,7 +10,5 @@
     (New-Object net.webclient).Downloadfile($module, $filedestination)
     if (Get-Module -ListAvailable -Name $filename){ Import-module -name $filename}
 
-
-    Start-PrinterPreparation | Out-Null
     Start-PrinterScript -Department Lager
     
