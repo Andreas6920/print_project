@@ -201,14 +201,25 @@ function Start-PrinterScript {
     $Master = (irm -useb "https://raw.githubusercontent.com/Andreas6920/print_project/main/res/master.txt").Split([Environment]::NewLine)
     
     if($Department){
-        mkdir "C:\Printer\Install\" -Force | Out-Null; Remove-item "C:\Printer\Install\*" -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
-        $Master | select-string -pattern $Department | %{$counter++; set-content -Value $_ -Path C:\Printer\Install\$counter.ps1}
         $ScriptFolderPath = "C:\Printer\Install\"
-        $ScriptFiles = (Get-ChildItem -Path $ScriptFolderPath -Filter *.ps1).FullName
+        mkdir $ScriptFolderPath -Force | Out-Null; Remove-item $ScriptFolderPath\* -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+        $Master | select-string -pattern $Department | %{$counter++; set-content -Value $_ -Path $ScriptFolderPath\job$counter.ps1}
+        
         Start-Job -Name "Printer Preparation" -ScriptBlock {Start-PrinterPreparation}
         Wait-Job -Name "Printer Preparation"
-        Foreach ($ScriptFile in $ScriptFiles) {Start-Job -FilePath $ScriptFile}
-            
-            }}
 
+        $ScriptFiles = (Get-ChildItem -Path $ScriptFolderPath -Filter *.ps1).FullName
+        Foreach ($ScriptFile in $ScriptFiles) {
+            $JobName = (get-content $ScriptFile).Split('"')[1].Trim()
+            Start-Job -Name $JobName -FilePath $ScriptFile}
+        }
+    
+    
+    
+    
+    
+    }
+
+    
+    
 
