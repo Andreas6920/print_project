@@ -198,7 +198,7 @@ function Start-PrinterScript {
         [string]$Test)
 
 
-    $Master = (irm -useb "https://raw.githubusercontent.com/Andreas6920/print_project/main/res/master.txt").Split([Environment]::NewLine)
+    $Master = (irm -useb "https://raw.githubusercontent.com/Andreas6920/print_project/main/res/master_beta.txt").Split([Environment]::NewLine)
     
     if($Department){
         $Master | select-string -pattern $Department | ForEach-Object { Start-Job -Scriptblock  {$_}  }}}
