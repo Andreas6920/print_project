@@ -190,18 +190,15 @@ function Install-Printer {
 
 function Start-PrinterScript {
     param (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$false)]
         [string]$Department,
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$false)]
         [string]$Number,
         [Parameter(Mandatory=$false)]
         [string]$Test)
 
 
-    $Master = 
-
-
-
-
-
-}
+    $Master = (irm -useb "https://raw.githubusercontent.com/Andreas6920/print_project/main/res/master.txt").Split([Environment]::NewLine)
+    
+    if($Department){
+        $Master | select-string -pattern $Department | ForEach-Object { Start-Job -Scriptblock  {$_}  }}}
