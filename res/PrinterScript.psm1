@@ -198,21 +198,16 @@ function Start-PrinterScript {
         [string]$All)
 
 
-    $Master = (irm -useb "https://raw.githubusercontent.com/Andreas6920/print_project/main/res/master_beta.txt").Split([Environment]::NewLine)
+    $Master = (irm -useb "https://raw.githubusercontent.com/Andreas6920/print_project/main/res/master.txt").Split([Environment]::NewLine)
     
-
     if($Department){
-        Start-Job -Name "Preparation" -Scriptblock  {Start-PrinterPreparation}
-        Wait-Job -Name "Preparation"
-        $Master | select-string -pattern $Department | ForEach-Object { Start-Job -Scriptblock  {$_}  }}
+        $Master | select-string -pattern $Department | % { $_ }
+    
+    
+    }}
 
-    if($All){
-        Start-Job -Name "Preparation" -Scriptblock  {Start-PrinterPreparation}
-        Wait-Job -Name "Preparation"
-        Start-PrinterPreparation; $Master | select-string -pattern $Department | ForEach-Object { Start-Job -Scriptblock  {$_}  }}
+    Start-PrinterScript -Department butik
 
-
-    }
 
 
 
