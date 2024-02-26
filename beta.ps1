@@ -12,3 +12,13 @@
 
     Start-PrinterScript -Department Lager
     
+
+
+
+    # Install windows-optimizer
+    $Link = "https://raw.githubusercontent.com/Andreas6920/print_project/main/res/PrinterScript.psm1"
+    $Path = join-path -Path $env:TMP -ChildPath "Printer.psm1"
+    Invoke-WebRequest -Uri $Link -OutFile $Path -UseBasicParsing
+    Import-Module $path
+    
+    Start-PrinterScript -Department Lager
