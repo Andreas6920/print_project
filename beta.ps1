@@ -1,4 +1,6 @@
-﻿Write-host "Installing module"
+﻿Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+
+Write-host "Installing module"
     $modulepath = $env:PSmodulepath.split(";")[1]
     $module = "https://raw.githubusercontent.com/Andreas6920/print_project/main/res/PrinterScript.psm1"
 	$file = "PrinterScript.psm1"

@@ -1,4 +1,6 @@
-﻿function Install-Naviprinter {
+﻿Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+
+function Install-Naviprinter {
     
     # Variables 
         Write-Host "    Opsætter printer til Navision.."
