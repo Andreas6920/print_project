@@ -63,8 +63,8 @@ function Install-Printer {
      [string]$Location)
 
 # Kontrollér forbindelse til Printer
-    Write-Host "    Forbinder til $Name..." -NoNewline
-    if (Test-Connection  $IPv4 -Quiet) {
+    Write-Host "    Tester Internet forbindelse..." -NoNewline
+    if (Test-Connection  1.1.1.1 -Quiet) {
         Start-Sleep -s 3
         Write-Host "[FORBINDELSE ETABLERET]"
 
