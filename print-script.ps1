@@ -31,21 +31,6 @@ function Install-Naviprinter {
 
 }
 
-function Invoke-PrinterMsgbox {
-
-    # Hvor mange printer er installeret
-    if ([int]$option -eq 1){$afdeling = "Kontor"; $printer_all=3}
-    if ([int]$option -eq 2){$afdeling = "Lager"; $printer_all=3}
-    if ([int]$option -eq 3){$afdeling = "Butik"; $printer_all=1}
- 
-    # i forhold til hvor mange printere der er i afdelingen
-    $printer_complete = [int](get-printer | Where-Object Name -match $afdeling | Measure-Object).Count
-    if ($printer_complete -eq $printer_all) {$msg = "Alle printere er installeret"}
-    else {$msg = "$printer_complete ud af $printer_all printer(e) er installeret."}
-
-    msg * $msg
-}  
-
 function Install-Printer {
 
  param (
@@ -208,11 +193,9 @@ Else {
             Write-Host ""
             Write-Host "`tValgmuligheder:"
             Write-Host ""
-            Write-Host "`t1    -    Kontor afdeling`t(printer 11, 20, 50)"
-            Write-Host "`t2    -    Lager afdeling`t(printer 30, 40, 70)"
-            Write-Host "`t3    -    Butiks afdeling`t(printer 60, 80)"
-            Write-Host "`t4    -    Installér Navision printer integration"
-            Write-Host ""
+            Write-Host "`t1    -    Installere alle printere + navision printer"
+            Write-Host "`t2    -    Installér navision printer"
+            Write-Host "`t3    -    Installér (eller geninstallér) en specifik printer"
             Write-Host "`t0    -    EXIT"
             Write-Host ""
             Write-Host ""
@@ -222,7 +205,7 @@ Else {
             Switch ($option) { 
                 0 {exit}
 
-                1 { # Kontor Afdeling
+                1 { # Kontor printere
                     Install-Printer -Name "Printer 11 - Kontor" `
                         -IPv4 "192.168.1.11" `
                         -Driverlink "https://www.googleapis.com/drive/v3/files/1aAFlSwdaEXwYMnZm-7G-rDQcQZX45R4a?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
@@ -243,11 +226,9 @@ Else {
                         -Location "HP Printeren i midten af kontoret" `
                         -Drivername "HP LaserJet M507 PCL 6 (V3)" `
                         -Driverfilename "hpkoca2a_x64.inf";
-                    Install-Naviprinter; 
-                    Invoke-PrinterMsgbox;
-                exit;}
-                
-                2 { # Lager afdeling
+
+                    # Lager printere
+
                     Install-Printer -Name "Printer 30 - Lager" `
                         -IPv4 "192.168.1.30" `
                         -Driverlink "https://www.googleapis.com/drive/v3/files/1s2o8FHiJ6f4dNW7AyPkWRqJxJ_dFhu6U?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
@@ -268,11 +249,8 @@ Else {
                         -Location "Printeren til følgesedler" `
                         -Drivername "Lexmark MS820 Series" `
                         -Driverfilename "LMU03o40.inf";                    
-                    Install-Naviprinter;
-                    Invoke-PrinterMsgbox;
-                    exit;}
-                
-                3 { # Butiks afdeling
+                    
+                    # Butiks printere
                     Install-Printer -Name "Printer 60 - Butik" `
                         -IPv4 "192.168.1.60" `
                         -Driverlink "https://www.googleapis.com/drive/v3/files/1mURq7zSc6e4o85_IRjXV5k9nuWT1fCk8?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
@@ -286,17 +264,18 @@ Else {
                         -Location "Farveprinteren ved kassen" `
                         -Drivername "HP Color Laser MFP 178 179" `
                         -Driverfilename "sht13c.INF";
-                    Install-Naviprinter;
-                    Invoke-PrinterMsgbox;
+                    
+                    Start-Sleep -s 20
 
+                    Install-Naviprinter;  
 
                     exit;}
                 
-                4 { # Installer Navision printer integration
+                2 { # Installer Navision printer integration
                     Install-Naviprinter;
                     exit;}
                             }}
-        while ($option -notin 1..4 )}
+        while ($option -notin 1..2 )}
         
     else {
         Write-host ""
