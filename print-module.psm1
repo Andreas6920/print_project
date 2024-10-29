@@ -1,5 +1,13 @@
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
+# Relaunch script as an elevated process
+If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
+{
+    # Relaunch as an elevated process
+    $Script = $MyInvocation.MyCommand.Path
+    Start-Process powershell.exe -Verb RunAs -ArgumentList "-ExecutionPolicy RemoteSigned", "-File `"$Script`""
+    
+}
 
 Function Start-PrinterConfiguration {
 
