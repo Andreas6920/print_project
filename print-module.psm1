@@ -1,37 +1,7 @@
-﻿Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-
-function Install-Naviprinter {
-    
-    # Variables 
-        Write-Host "    Opsætter printer til Navision.."
-        $link = "https://nphardwareconnector.blob.core.windows.net/production/Setup.exe"
-        $path = Join-Path -Path $env:TMP -ChildPath (Split-Path $link -Leaf)
-        $desktop = [Environment]::GetFolderPath("Desktop")
-        $startup = [Environment]::GetFolderPath("Startup")
-        $shortcut = Join-Path $desktop -Childpath "NP Hardware Connector.lnk"
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 
 
-    # Install
-        if (!(Test-Path $shortcut)) {
-        Write-host "`t- Downloader Programmet.."
-        Start-Sleep -S 1
-        (New-Object net.webclient).Downloadfile("$link", "$path")
-        Write-host "`t- Installere Programmet.."
-        Get-Process | Where-Object { $_.Name -match "NP Hardware Connector" } | Select-Object -First 1 | Stop-Process
-        Start-Sleep -S 1
-        Start $path}
-
-    # Create startup task
-        Write-host "`t- Sætter til at starte automatisk.."
-        Start-Sleep -S 3
-        while (!(Test-Path $shortcut)) { Start-Sleep -S 1 }
-        Copy-Item $shortcut $startup  
-        Write-Host "`t- Navision printer opsætning er nu installeret." -f Green
-        Start-Sleep -S 3       
-
-}
-
-function Install-Printer {
+Function Start-PrinterConfiguration {
 
  param (
      [Parameter(Mandatory=$true)]
@@ -175,15 +145,115 @@ Else {
         Write-Host "`tTest om printeren er i dvale eller om du/printeren har internet!" -BackgroundColor Red -f White
         Write-host ""
     }
-}
 
 
 
-# Kontrollér admin rettigheder
-    $admin_permissions_check = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-    $admin_permissions_check = $admin_permissions_check.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-    if ($admin_permissions_check) {
 
+<# End of Start-PrinterConfiguration function #>}
+
+
+Function Install-Printer {
+    param (
+        [ValidateSet(11, 20, 30, 40, 50, 60, 70, 80)]
+        [int]$PrinterNummer,   
+        [ValidateSet("Kontor", "Lager", "Butik")] 
+        [string]$Afdeling,
+        [switch]$Alle,
+        [switch]$NavisionPrinter)
+
+if(($Afdeling -eq "Kontor") -or ($PrinterNummer -eq "11") -or ($Alle)){
+    Start-PrinterConfiguration -Name "Printer 11 - Kontor" `
+                        -IPv4 "192.168.1.11" `
+                        -Driverlink "https://www.googleapis.com/drive/v3/files/1aAFlSwdaEXwYMnZm-7G-rDQcQZX45R4a?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
+                        -Location "Printer bag Lone B" `
+                        -Drivername "HP LaserJet M507 PCL 6 (V3)" `
+                        -Driverfilename "hpkoca2a_x64.inf";}
+
+if(($Afdeling -eq "Kontor") -or ($PrinterNummer -eq "20") -or ($Alle)){
+    Start-PrinterConfiguration -Name "Printer 20 - Kontor" `
+    -IPv4 "192.168.1.20" `
+    -Driverlink "https://www.googleapis.com/drive/v3/files/1mW3MC4ODo77bfyWa3sGotITFsaZICvwi?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
+    -Location "Canon printer med scanner" `
+    -Drivername "Canon Generic Plus PCL6" `
+    -Driverfilename "Cnp60MA64.INF";}
+
+if(($Afdeling -eq "Lager") -or ($PrinterNummer -eq "30") -or ($Alle)){
+        Start-PrinterConfiguration -Name "Printer 30 - Lager" `
+        -IPv4 "192.168.1.30" `
+        -Driverlink "https://www.googleapis.com/drive/v3/files/1s2o8FHiJ6f4dNW7AyPkWRqJxJ_dFhu6U?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
+        -Location "Lagerprinter med scanner" `
+        -Drivername "Brother MFC-9330CDW Printer" `
+        -Driverfilename "BRPRC12A.INF";}
+
+if(($Afdeling -eq "Lager") -or ($PrinterNummer -eq "40") -or ($Alle)){
+        Start-PrinterConfiguration -Name "Printer 40 - Lager" `
+        -IPv4 "192.168.1.40" `
+        -Driverlink "https://www.googleapis.com/drive/v3/files/1uzIMA03CMIvebVwyE7dljLBlrN-fJINl?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
+        -Location "Lagerprinter ved booking" `
+        -Drivername "Brother HL-L2360D series" `
+        -Driverfilename "BROHL13A.INF";}
+
+if(($Afdeling -eq "Kontor") -or ($PrinterNummer -eq "50") -or ($Alle)){
+    Start-PrinterConfiguration -Name "Printer 50 - Kontor" `
+    -IPv4 "192.168.1.50" `
+    -Driverlink "https://www.googleapis.com/drive/v3/files/1aAFlSwdaEXwYMnZm-7G-rDQcQZX45R4a?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
+    -Location "HP Printeren i midten af kontoret" `
+    -Drivername "HP LaserJet M507 PCL 6 (V3)" `
+    -Driverfilename "hpkoca2a_x64.inf";}
+
+if(($Afdeling -eq "Butik") -or ($PrinterNummer -eq "60") -or ($Alle)){
+    Start-PrinterConfiguration -Name "Printer 60 - Butik" `
+    -IPv4 "192.168.1.60" `
+    -Driverlink "https://www.googleapis.com/drive/v3/files/1mURq7zSc6e4o85_IRjXV5k9nuWT1fCk8?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
+    -Location "Printeren ved kassen" `
+    -Drivername "ES7131(PCL6)" `
+    -Driverfilename "OKW3X04V.INF";}
+
+if(($Afdeling -eq "Lager") -or ($PrinterNummer -eq "70") -or ($Alle)){
+    Start-PrinterConfiguration -Name "Printer 70 - Lager" `
+    -IPv4 "192.168.1.70" `
+    -Driverlink "https://www.googleapis.com/drive/v3/files/1OoS5fvj9S_J8tyYY-U7wY4C_QcuXR3dD?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
+    -Location "Printeren til følgesedler" `
+    -Drivername "Lexmark MS820 Series" `
+    -Driverfilename "LMU03o40.inf";}
+
+if(($Afdeling -eq "Butik") -or ($PrinterNummer -eq "80") -or ($Alle)){
+    Start-PrinterConfiguration -Name "Printer 80 - Butik" `
+    -IPv4 "192.168.1.80" `
+    -Driverlink "https://www.googleapis.com/drive/v3/files/15OTs4jA9-c6xgS1xjU3Vk4yEwkLHfJm9?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
+    -Location "Farveprinteren ved kassen" `
+    -Drivername "HP Color Laser MFP 178 179" `
+    -Driverfilename "sht13c.INF";}
+
+if($NavisionPrinter){
+
+    # Variables 
+        Write-Host "    Opsætter printer til Navision.."
+        $link = "https://nphardwareconnector.blob.core.windows.net/production/Setup.exe"
+        $path = Join-Path -Path $env:TMP -ChildPath (Split-Path $link -Leaf)
+        $desktop = [Environment]::GetFolderPath("Desktop")
+        $startup = [Environment]::GetFolderPath("Startup")
+        $shortcut = Join-Path $desktop -Childpath "NP Hardware Connector.lnk"
+
+    # Install
+        if (!(Test-Path $shortcut)) {
+        Write-host "`t- Downloader Programmet.."
+        Start-Sleep -S 1
+        (New-Object net.webclient).Downloadfile("$link", "$path")
+        Write-host "`t- Installere Programmet.."
+        Get-Process | Where-Object { $_.Name -match "NP Hardware Connector" } | Select-Object -First 1 | Stop-Process
+        Start-Sleep -S 1
+        Start $path}
+
+    # Create startup task
+        Write-host "`t- Sætter til at starte automatisk.."
+        Start-Sleep -S 3
+        while (!(Test-Path $shortcut)) { Start-Sleep -S 1 }
+        Copy-Item $shortcut $startup  
+        Write-Host "`t- Navision printer opsætning er nu installeret." -f Green
+        Start-Sleep -S 3}
+        
+    else{
         do {
             Clear-Host
             Write-Host ""
@@ -193,9 +263,12 @@ Else {
             Write-Host ""
             Write-Host "`tValgmuligheder:"
             Write-Host ""
-            Write-Host "`t1    -    Installere alle printere + navision printer"
-            Write-Host "`t2    -    Installér navision printer"
-            Write-Host "`t3    -    Installér (eller geninstallér) en specifik printer"
+            Write-Host "`t1    -    Installér alle printere"
+            Write-Host "`t2    -    Installér specific printer"
+            Write-Host "`t3    -    Installér kontor printere"
+            Write-Host "`t4    -    Installér lager printere"
+            Write-Host "`t5    -    Installér butik printere"
+            Write-Host "`t6    -    Installér navision printer"
             Write-Host "`t0    -    EXIT"
             Write-Host ""
             Write-Host ""
@@ -205,86 +278,14 @@ Else {
             Switch ($option) { 
                 0 {exit}
 
-                1 { # Kontor printere
-                    Install-Printer -Name "Printer 11 - Kontor" `
-                        -IPv4 "192.168.1.11" `
-                        -Driverlink "https://www.googleapis.com/drive/v3/files/1aAFlSwdaEXwYMnZm-7G-rDQcQZX45R4a?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
-                        -Location "Printer bag Lone B" `
-                        -Drivername "HP LaserJet M507 PCL 6 (V3)" `
-                        -Driverfilename "hpkoca2a_x64.inf";
-
-                    Install-Printer -Name "Printer 20 - Kontor" `
-                        -IPv4 "192.168.1.20" `
-                        -Driverlink "https://www.googleapis.com/drive/v3/files/1mW3MC4ODo77bfyWa3sGotITFsaZICvwi?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
-                        -Location "Canon printer med scanner" `
-                        -Drivername "Canon Generic Plus PCL6" `
-                        -Driverfilename "Cnp60MA64.INF";
-
-                    Install-Printer -Name "Printer 50 - Kontor" `
-                        -IPv4 "192.168.1.50" `
-                        -Driverlink "https://www.googleapis.com/drive/v3/files/1aAFlSwdaEXwYMnZm-7G-rDQcQZX45R4a?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
-                        -Location "HP Printeren i midten af kontoret" `
-                        -Drivername "HP LaserJet M507 PCL 6 (V3)" `
-                        -Driverfilename "hpkoca2a_x64.inf";
-
-                    # Lager printere
-
-                    Install-Printer -Name "Printer 30 - Lager" `
-                        -IPv4 "192.168.1.30" `
-                        -Driverlink "https://www.googleapis.com/drive/v3/files/1s2o8FHiJ6f4dNW7AyPkWRqJxJ_dFhu6U?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
-                        -Location "Lagerprinter med scanner" `
-                        -Drivername "Brother MFC-9330CDW Printer" `
-                        -Driverfilename "BRPRC12A.INF";
+                1 { Install-Printer -Alle }
+                2 { $number = Read-Host "Indtast Nummer", Install-Printer -PrinterNummer $number }
+                3 { Install-Printer -Afdeling "Kontor" }
+                4 { Install-Printer -Afdeling "Lager" }
+                5 { Install-Printer -Afdeling "Butik" }
+                6 { Install-Printer -NavisionPrinter }
                 
-                    Install-Printer -Name "Printer 40 - Lager" `
-                        -IPv4 "192.168.1.40" `
-                        -Driverlink "https://www.googleapis.com/drive/v3/files/1uzIMA03CMIvebVwyE7dljLBlrN-fJINl?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
-                        -Location "Lagerprinter ved booking" `
-                        -Drivername "Brother HL-L2360D series" `
-                        -Driverfilename "BROHL13A.INF";
-
-                    Install-Printer -Name "Printer 70 - Lager" `
-                        -IPv4 "192.168.1.70" `
-                        -Driverlink "https://www.googleapis.com/drive/v3/files/1OoS5fvj9S_J8tyYY-U7wY4C_QcuXR3dD?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
-                        -Location "Printeren til følgesedler" `
-                        -Drivername "Lexmark MS820 Series" `
-                        -Driverfilename "LMU03o40.inf";                    
-                    
-                    # Butiks printere
-                    Install-Printer -Name "Printer 60 - Butik" `
-                        -IPv4 "192.168.1.60" `
-                        -Driverlink "https://www.googleapis.com/drive/v3/files/1mURq7zSc6e4o85_IRjXV5k9nuWT1fCk8?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
-                        -Location "Printeren ved kassen" `
-                        -Drivername "ES7131(PCL6)" `
-                        -Driverfilename "OKW3X04V.INF";    
-
-                    Install-Printer -Name "Printer 80 - Butik" `
-                        -IPv4 "192.168.1.80" `
-                        -Driverlink "https://www.googleapis.com/drive/v3/files/15OTs4jA9-c6xgS1xjU3Vk4yEwkLHfJm9?alt=media&key=AIzaSyDCXkesTBEsIlxySObsDb2j5-44AsTtqXk" `
-                        -Location "Farveprinteren ved kassen" `
-                        -Drivername "HP Color Laser MFP 178 179" `
-                        -Driverfilename "sht13c.INF";
-                    
-                    Start-Sleep -s 20
-
-                    Install-Naviprinter;  
-
-                    exit;}
-                
-                2 { # Installer Navision printer integration
-                    Install-Naviprinter;
-                    exit;}
                             }}
         while ($option -notin 1..2 )}
         
-    else {
-        Write-host ""
-        Write-host "`t" -nonewline
-        Write-host "Du har ikke åbnet PowerShell som administrator." -b red -f white
-        Write-host "`t" -nonewline
-        Write-host 'Luk dette vindue og vælg "Windows PowerShell (Admin)"'  -b red -f white
-        Write-host ""
-        Write-host "`t" -nonewline
-        Write-host 'Har du husket at klikke på start med din HØJRE musetast?'  -b red -f white
-        Write-host ""
-        }
+<# End of Install-Printer function #>}
