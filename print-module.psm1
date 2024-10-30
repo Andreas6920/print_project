@@ -9,7 +9,13 @@ If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     
 }
 
-Function Get-LogDate {return (Get-Date -f "[yyyy/MM/dd HH:MM:ss]")}
+Function Get-LogDate {
+    
+    #return (Get-Date -f "[yyyy/MM/dd HH:MM:ss]")
+    return "[{0:MM/dd/yy} {0:HH:mm:ss}]" -f (Get-Date)
+
+
+}
 
 Function Start-PrinterConfiguration {
 
@@ -28,7 +34,7 @@ Function Start-PrinterConfiguration {
      [string]$Location)
 
 # Kontrollér forbindelse til Printer
-    Write-Host "$(Get-LogDate)    - Tester Internet forbindelse..." -NoNewline -ForegroundColor Yellow
+    Write-Host "$(Get-LogDate)   - Tester Internet forbindelse..." -NoNewline -ForegroundColor Yellow
     if (Test-Connection  1.1.1.1 -Quiet) {
         Start-Sleep -s 3
         Write-Host "[FORBINDELSE ETABLERET]" -ForegroundColor Green
