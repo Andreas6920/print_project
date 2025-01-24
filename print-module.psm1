@@ -162,6 +162,43 @@ Function Install-Printer {
         [switch]$Alle,
         [switch]$NavisionPrinter)
 
+# Hvis ingen parametre er sat
+    if (-not $PSBoundParameters.Keys.Count) {
+        do {
+            Clear-Host
+            Write-Host ""
+            Write-Host ""
+            Write-Host "PRINTERPROGRAM, version 3.0" -ForegroundColor Yellow
+            Write-Host ""
+            Write-Host ""
+            Write-Host "`tValgmuligheder:"
+            Write-Host ""
+            Write-Host "`t`t1    -    Installér alle printere"
+            Write-Host "`t`t2    -    Installér specific printer"
+            Write-Host "`t`t3    -    Installér kontor printere"
+            Write-Host "`t`t4    -    Installér lager printere"
+            Write-Host "`t`t5    -    Installér butik printere"
+            Write-Host "`t`t6    -    Installér navision printer"
+            Write-Host "`t`t0    -    EXIT"
+            Write-Host ""
+            Write-Host ""
+            Write-Host "INDTAST NUMMERET HER (1-6), EFTERFUGLT AF ENTER: " -ForegroundColor Yellow -NoNewline
+            $option = Read-Host
+            ""
+            Switch ($option) { 
+                0 {exit}
+
+                1 { Install-Printer -Alle }
+                2 { $number = Read-Host "Indtast Nummer"; Install-Printer -PrinterNummer $number }
+                3 { Install-Printer -Afdeling "Kontor" }
+                4 { Install-Printer -Afdeling "Lager" }
+                5 { Install-Printer -Afdeling "Butik" }
+                6 { Install-Printer -NavisionPrinter }
+            }
+        } while ($option -notin 0..6)
+        return
+    }
+
 if(($Afdeling -eq "Kontor") -or ($PrinterNummer -eq "11") -or ($Alle)){
     Start-PrinterConfiguration -Name "Printer 11 - Kontor" `
     -IPv4 "192.168.1.11" `
@@ -253,40 +290,5 @@ if($NavisionPrinter){
     Copy-Item $shortcut $startup  
     Write-Host "$(Get-LogDate)`t  - Navision printer er nu installeret." -f Green
     Start-Sleep -S 3}
-        
-    {
-        do {
-            Clear-Host
-            Write-Host ""
-            Write-Host ""
-            Write-Host "PRINTERPROGRAM, version 2.5" -f yellow
-            Write-Host ""
-            Write-Host ""
-            Write-Host "$(Get-LogDate)`tValgmuligheder:"
-            Write-Host ""
-            Write-Host "$(Get-LogDate)`t1    -    Installér alle printere"
-            Write-Host "$(Get-LogDate)`t2    -    Installér specific printer"
-            Write-Host "$(Get-LogDate)`t3    -    Installér kontor printere"
-            Write-Host "$(Get-LogDate)`t4    -    Installér lager printere"
-            Write-Host "$(Get-LogDate)`t5    -    Installér butik printere"
-            Write-Host "$(Get-LogDate)`t6    -    Installér navision printer"
-            Write-Host "$(Get-LogDate)`t0    -    EXIT"
-            Write-Host ""
-            Write-Host ""
-            Write-Host "INDTAST NUMMERET HER (1-4), EFTERFUGLT AF ENTER: " -f yellow -nonewline; ; ;
-            $option = Read-Host
-            "";
-            Switch ($option) { 
-                0 {exit}
 
-                1 { Install-Printer -Alle }
-                2 { $number = Read-Host "Indtast Nummer", Install-Printer -PrinterNummer $number }
-                3 { Install-Printer -Afdeling "Kontor" }
-                4 { Install-Printer -Afdeling "Lager" }
-                5 { Install-Printer -Afdeling "Butik" }
-                6 { Install-Printer -NavisionPrinter }
-                
-                            }}
-        while ($option -notin 1..2 )}
-        
 <# End of Install-Printer function #>}
