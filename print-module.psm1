@@ -9,13 +9,10 @@ If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     
 }
 
-Function Get-LogDate {
-    
-    #return (Get-Date -f "[yyyy/MM/dd HH:MM:ss]")
-    return "[{0:dd/MM/yy} {0:HH:mm:ss}]" -f (Get-Date)
+function Get-LogDate {return (Get-Date -f "yyyy/MM/dd HH:mm:ss")}
 
 
-}
+
 
 Function Start-PrinterConfiguration {
 
