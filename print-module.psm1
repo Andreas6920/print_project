@@ -9,13 +9,9 @@ If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     
 }
 
-Function Get-LogDate {
-    
-    #return (Get-Date -f "[yyyy/MM/dd HH:MM:ss]")
-    return "[{0:dd/MM/yy} {0:HH:mm:ss}]" -f (Get-Date)
+# Timestamps for actions
+    Function Get-LogDate {return (Get-Date -f "[yyyy/MM/dd HH:mm:ss]")}
 
-
-}
 
 Function Start-PrinterConfiguration {
 
@@ -34,7 +30,7 @@ Function Start-PrinterConfiguration {
      [string]$Location)
 
 # Kontrollér forbindelse til Printer
-    Write-Host "$(Get-LogDate)`t- $($Name):" -ForegroundColor Yellow
+Write-Host "$(Get-LogDate)`t    $($Name):" -ForegroundColor Green
     
 # PART 1 - Printer Klargøring
 
@@ -48,7 +44,7 @@ Function Start-PrinterConfiguration {
      
     # Clean spooler
     if (Get-ChildItem $spoolfolder){
-        Write-Host "$(Get-LogDate)`t  - Renser spooler"
+        Write-Host "$(Get-LogDate)`t        - Renser spooler" -ForegroundColor Yellow
         Stop-Service "Spooler" | out-null 
         Start-Sleep -s 3
         Get-ChildItem -Path $spoolfolder | Remove-Item -Recurse -Force
@@ -58,7 +54,7 @@ Function Start-PrinterConfiguration {
     # Deaktiver internet explorer first run
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     if (!(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main").DisableFirstRunCustomize){
-        Write-Host "$(Get-LogDate)`t  - Deaktiver IE wizard"
+        Write-Host "$(Get-LogDate)`t        - Deaktiver IE wizard" -ForegroundColor Yellow
         Start-Sleep -s 3
         New-Item -Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main" -Force | Out-Null
         Start-Sleep -s 3
@@ -66,7 +62,7 @@ Function Start-PrinterConfiguration {
         
     # Deaktiver automatisk installation af netværksprintere
     if (!(Test-Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private")) {
-        Write-Host "$(Get-LogDate)`t  - Deaktiver auto install"
+        Write-Host "$(Get-LogDate)`t        - Deaktiver auto install" -ForegroundColor Yellow
         New-Item -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private" -Force | Out-Null
         Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\NcdAutoSetup\Private" -Name "AutoSetup" -Type DWord -Value 0}
     
@@ -76,7 +72,7 @@ Function Start-PrinterConfiguration {
     if (Get-Printer | ? Name -match $tag){
         $printername = (Get-printer | ? name -match $tag).Name
         $printerport = (Get-printer | ? name -match $tag).PortName
-        Write-Host "$(Get-LogDate)`t  - Fjerner gamle installation"
+        Write-Host "$(Get-LogDate)`t        - Fjerner gamle installation" -ForegroundColor Yellow
         Remove-Printer -Name $printername
         Start-Sleep -S 2
         Remove-PrinterPort -Name $printerport}}
@@ -86,7 +82,7 @@ Function Start-PrinterConfiguration {
     foreach ($tag in $printertags){
     if (Get-Printer | ? Name -cmatch $tag){
         $printername = (Get-printer | ? name -match $tag).Name
-        Write-Host "$(Get-LogDate)`t  - Fjerner printer: $printername"
+        Write-Host "$(Get-LogDate)`t        - Fjerner printer: $printername" -ForegroundColor Yellow
         Remove-Printer -Name $printername}}
 
     # Fjern gamle jensen company printere
@@ -95,14 +91,14 @@ Function Start-PrinterConfiguration {
     if (Get-Printer | ? Name -match $tag){
         $printername = (Get-printer | ? name -match $tag).Name
         $printerport = (Get-printer | ? name -match $tag).PortName
-        Write-Host "$(Get-LogDate)`t  - Fjerner printer: $printername"
+        Write-Host "$(Get-LogDate)`t        - Fjerner printer: $printername" -ForegroundColor Yellow
         Remove-Printer -Name $printername
         Start-Sleep -S 2
         Remove-PrinterPort -Name $printerport}}
              
     # Mappe oprettes til driver
     if(!(test-path $printerfolder)){
-        Write-Host "$(Get-LogDate)`t  - Opretter printermappe"
+        Write-Host "$(Get-LogDate)`t        - Opretter printermappe" -ForegroundColor Yellow
         new-item -ItemType Directory $printerfolder | Out-Null}
     else{
         Remove-Item "$printerfolder\*" -Recurse -Exclude "$Name.zip" -Force | Out-Null
@@ -112,11 +108,11 @@ Function Start-PrinterConfiguration {
     Start-Sleep -S 2
      
      # Downloader driver
-    Write-Host "$(Get-LogDate)`t  - Downloader driver"
+    Write-Host "$(Get-LogDate)`t        - Downloader driver" -ForegroundColor Yellow
     (New-Object net.webclient).Downloadfile($Driverlink, $printerdriverfile)   
      
      # Udpakker driver
-    Write-Host "$(Get-LogDate)`t  - Udpakker driver"
+    Write-Host "$(Get-LogDate)`t        - Udpakker driver" -ForegroundColor Yellow
     Expand-Archive -Path $printerdriverfile -DestinationPath $printerfolder
     $printerdriverinf = (get-childitem $printerfolder -include "*.inf" -Recurse | ? Name -eq $Driverfilename)[0].FullName
     Start-Sleep -S 2
@@ -125,29 +121,29 @@ Function Start-PrinterConfiguration {
 
     $ProgressPreference = "SilentlyContinue" # hide progressbar
     Start-Sleep -s 3
-    Write-Host "$(Get-LogDate)`t  - Tilføjer driver"
+    Write-Host "$(Get-LogDate)`t        - Tilføjer driver" -ForegroundColor Yellow
     pnputil.exe -i -a $printerdriverinf | out-null
     Start-Sleep -s 3
-    Write-Host "$(Get-LogDate)`t  - Installér driver:"$Drivername
+    Write-Host "$(Get-LogDate)`t        - Installér driver: $($Drivername)" -ForegroundColor Yellow
     Add-PrinterDriver -Name $Drivername | out-null
     Start-Sleep -s 3
-    Write-Host "$(Get-LogDate)`t  - Opretter printerport:"$IPv4
+    Write-Host "$(Get-LogDate)`t        - Opretter printerport: $($IPv4)" -ForegroundColor Yellow
     Add-PrinterPort -Name $IPv4 -PrinterHostAddress $IPv4 -ErrorAction Ignore | out-null
     Start-Sleep -s 3
-    Write-Host "$(Get-LogDate)`t  - Opsætter printer"
+    Write-Host "$(Get-LogDate)`t        - Opsætter printer" -ForegroundColor Yellow
     Add-Printer -Name $Name -PortName $IPv4 -DriverName $Drivername -PrintProcessor winprint -Location $Location -Comment "automatiseret af Andreas" | out-null; sleep -s 5
     Start-sleep -S 3;
-    Write-Host "$(Get-LogDate)`t  - Indstiller én sides udskrift fremfor dobbelsiddet"
+    Write-Host "$(Get-LogDate)`t        - Indstiller én sides udskrift fremfor dobbelsiddet" -ForegroundColor Yellow
     Get-Printer -Name $Name | Set-PrintConfiguration -DuplexingMode OneSided
     Start-sleep -S 3;
-    Write-Host "$(Get-LogDate)`t  - Rengør disk"
+    Write-Host "$(Get-LogDate)`t        - Rengør disk" -ForegroundColor Yellow
     Get-childitem -path $printerfolder -Directory | Remove-Item -Recurse -Force | Out-Null
     Get-childitem -path $printerfolder | ? Name -notmatch "$Name|\d{1,4}\.\d{1,2}\.\d{1,2}.zip" | Remove-Item -Force | Out-Null
     Start-sleep -S 3;
-    Write-Host "$(Get-LogDate)`t  - Dobbelt-tjekker at printer processen kører"
+    Write-Host "$(Get-LogDate)`t        - Dobbelt-tjekker at printer processen kører" -ForegroundColor Yellow
     Start-Service  -Name "Spooler"
     Start-sleep -S 3;
-    Write-Host "$(Get-LogDate)`t  - Printer '$($Name)' er nu installeret."
+    Write-Host "$(Get-LogDate)`t        - Printer '$($Name)' er nu installeret." -ForegroundColor Yellow
     $ProgressPreference = "Continue"
 
 <# End of Start-PrinterConfiguration function #>}
@@ -266,7 +262,7 @@ if(($Afdeling -eq "Butik") -or ($PrinterNummer -eq "80") -or ($Alle)){
 if($NavisionPrinter){
 
     # Variables 
-    Write-Host "$(Get-LogDate)`t- Navision Printer:" -ForegroundColor Yellow
+    Write-Host "$(Get-LogDate)`t    Navision Printer:" -ForegroundColor Green
     $link = "https://nphardwareconnector.blob.core.windows.net/production/Setup.exe"
     $path = Join-Path -Path $env:TMP -ChildPath (Split-Path $link -Leaf)
     $desktop = [Environment]::GetFolderPath("Desktop")
@@ -275,20 +271,20 @@ if($NavisionPrinter){
 
     # Install
     if (!(Test-Path $shortcut)) {
-    Write-host "$(Get-LogDate)`t  - Downloader Programmet.."
+    Write-Host "$(Get-LogDate)`t        - Downloader Programmet.." -ForegroundColor Yellow
     Start-Sleep -S 1
     (New-Object net.webclient).Downloadfile("$link", "$path")
-    Write-host "$(Get-LogDate)`t  - Installere Programmet.."
+    Write-Host "$(Get-LogDate)`t        - Installere Programmet.." -ForegroundColor Yellow
     Get-Process | Where-Object { $_.Name -match "NP Hardware Connector" } | Select-Object -First 1 | Stop-Process
     Start-Sleep -S 1
     Start $path}
 
     # Create startup task
-    Write-host "$(Get-LogDate)`t  - Sætter til at starte automatisk.."
+    Write-Host "$(Get-LogDate)`t        - Sætter til at starte automatisk.." -ForegroundColor Yellow
     Start-Sleep -S 3
     while (!(Test-Path $shortcut)) { Start-Sleep -S 1 }
     Copy-Item $shortcut $startup  
-    Write-Host "$(Get-LogDate)`t  - Navision printer er nu installeret." -f Green
+    Write-Host "$(Get-LogDate)`t        - Navision printer er nu installeret." -f Green
     Start-Sleep -S 3}
 
 <# End of Install-Printer function #>}
