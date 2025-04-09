@@ -1,5 +1,8 @@
-
-
+# Ensure admin rights
+If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){
+    # Relaunch as an elevated process
+    $Script = $MyInvocation.MyCommand.Path
+    Start-Process powershell.exe -Verb RunAs -ArgumentList "-ExecutionPolicy RemoteSigned", "-File `"$Script`""}
 
 Function Start-PrinterConfiguration {
  param (
@@ -16,12 +19,6 @@ Function Start-PrinterConfiguration {
      [Parameter(Mandatory=$true)]
      [string]$Location)
 
-# Ensure admin rights
-If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){
-    # Relaunch as an elevated process
-    $Script = $MyInvocation.MyCommand.Path
-    Start-Process powershell.exe -Verb RunAs -ArgumentList "-ExecutionPolicy RemoteSigned", "-File `"$Script`""}
-
 #Timestamps for actions
     Function Get-LogDate { return (Get-Date -f "[yyyy/MM/dd HH:mm:ss]") }
 
@@ -31,7 +28,7 @@ Write-Host "$(Get-LogDate)`t    $($Name):" -ForegroundColor Green
 # PART 1 - Printer Klargøring
 
     # Variabler
-    Start-Sleep -s 3
+    Start-Sleep -Milliseconds 500
     $system = $env:SystemDrive
     $system32 = [Environment]::GetFolderPath("System")
     $printerfolder = Join-path -Path $system -ChildPath "Printer\$name"
@@ -42,18 +39,18 @@ Write-Host "$(Get-LogDate)`t    $($Name):" -ForegroundColor Green
     if (Get-ChildItem $spoolfolder){
         Write-Host "$(Get-LogDate)`t        - Renser spooler" -ForegroundColor Yellow
         Stop-Service "Spooler" | out-null 
-        Start-Sleep -s 3
+        Start-Sleep -Milliseconds 500
         Get-ChildItem -Path $spoolfolder | Remove-Item -Recurse -Force
         Start-Service "Spooler" | out-null
-        Start-Sleep -s 3}
+        Start-Sleep -Milliseconds 500}
         
     # Deaktiver internet explorer first run
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     if (!(Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main").DisableFirstRunCustomize){
         Write-Host "$(Get-LogDate)`t        - Deaktiver IE wizard" -ForegroundColor Yellow
-        Start-Sleep -s 3
+        Start-Sleep -Milliseconds 500
         New-Item -Path "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main" -Force | Out-Null
-        Start-Sleep -s 3
+        Start-Sleep -Milliseconds 500
         Set-ItemProperty -Path  "HKLM:\SOFTWARE\Microsoft\Internet Explorer\Main" -Name "DisableFirstRunCustomize"  -Value 1}
         
     # Deaktiver automatisk installation af netværksprintere
@@ -65,9 +62,9 @@ Write-Host "$(Get-LogDate)`t    $($Name):" -ForegroundColor Green
     # Fjern gamle installation af aktuelle printer
     $printertags = $Name
     foreach ($tag in $printertags){
-    if (Get-Printer | ? Name -match $tag){
-        $printername = (Get-printer | ? name -match $tag).Name
-        $printerport = (Get-printer | ? name -match $tag).PortName
+    if (Get-Printer | Where-Object Name -match $tag){
+        $printername = (Get-printer | Where-Object name -match $tag).Name
+        $printerport = (Get-printer | Where-Object name -match $tag).PortName
         Write-Host "$(Get-LogDate)`t        - Fjerner gamle installation" -ForegroundColor Yellow
         Remove-Printer -Name $printername
         Start-Sleep -S 2
@@ -77,16 +74,16 @@ Write-Host "$(Get-LogDate)`t    $($Name):" -ForegroundColor Green
     $printertags = "Fax", "OneNote for Windows 10", "Microsoft XPS Document Writer", "Microsoft Print to PDF" 
     foreach ($tag in $printertags){
     if (Get-Printer | ? Name -cmatch $tag){
-        $printername = (Get-printer | ? name -match $tag).Name
+        $printername = (Get-printer | Where-Object name -match $tag).Name
         Write-Host "$(Get-LogDate)`t        - Fjerner printer: $printername" -ForegroundColor Yellow
         Remove-Printer -Name $printername}}
 
     # Fjern gamle jensen company printere
     $printertags = "9310", "4132", "M507", "7131", "9330", "2365", "Printer 10 - Kontor"
     foreach ($tag in $printertags){
-    if (Get-Printer | ? Name -match $tag){
-        $printername = (Get-printer | ? name -match $tag).Name
-        $printerport = (Get-printer | ? name -match $tag).PortName
+    if (Get-Printer | Where-Object Name -match $tag){
+        $printername = (Get-printer | Where-Object name -match $tag).Name
+        $printerport = (Get-printer | Where-Object name -match $tag).PortName
         Write-Host "$(Get-LogDate)`t        - Fjerner printer: $printername" -ForegroundColor Yellow
         Remove-Printer -Name $printername
         Start-Sleep -S 2
@@ -116,29 +113,29 @@ Write-Host "$(Get-LogDate)`t    $($Name):" -ForegroundColor Green
 # PART 2 - Printer Installation
 
     $ProgressPreference = "SilentlyContinue" # hide progressbar
-    Start-Sleep -s 3
+    Start-Sleep -Milliseconds 500
     Write-Host "$(Get-LogDate)`t        - Tilføjer driver" -ForegroundColor Yellow
     pnputil.exe -i -a $printerdriverinf | out-null
-    Start-Sleep -s 3
+    Start-Sleep -Milliseconds 500
     Write-Host "$(Get-LogDate)`t        - Installér driver: $($Drivername)" -ForegroundColor Yellow
     Add-PrinterDriver -Name $Drivername | out-null
-    Start-Sleep -s 3
+    Start-Sleep -Milliseconds 500
     Write-Host "$(Get-LogDate)`t        - Opretter printerport: $($IPv4)" -ForegroundColor Yellow
     Add-PrinterPort -Name $IPv4 -PrinterHostAddress $IPv4 -ErrorAction Ignore | out-null
-    Start-Sleep -s 3
+    Start-Sleep -Milliseconds 500
     Write-Host "$(Get-LogDate)`t        - Opsætter printer" -ForegroundColor Yellow
     Add-Printer -Name $Name -PortName $IPv4 -DriverName $Drivername -PrintProcessor winprint -Location $Location -Comment "automatiseret af Andreas" | out-null; sleep -s 5
-    Start-sleep -S 3;
+    Start-Sleep -Milliseconds 500;
     Write-Host "$(Get-LogDate)`t        - Indstiller én sides udskrift fremfor dobbelsiddet" -ForegroundColor Yellow
     Get-Printer -Name $Name | Set-PrintConfiguration -DuplexingMode OneSided
-    Start-sleep -S 3;
+    Start-Sleep -Milliseconds 500;
     Write-Host "$(Get-LogDate)`t        - Rengør disk" -ForegroundColor Yellow
     Get-childitem -path $printerfolder -Directory | Remove-Item -Recurse -Force | Out-Null
     Get-childitem -path $printerfolder | ? Name -notmatch "$Name|\d{1,4}\.\d{1,2}\.\d{1,2}.zip" | Remove-Item -Force | Out-Null
-    Start-sleep -S 3;
+    Start-Sleep -Milliseconds 500;
     Write-Host "$(Get-LogDate)`t        - Dobbelt-tjekker at printer processen kører" -ForegroundColor Yellow
     Start-Service  -Name "Spooler"
-    Start-sleep -S 3;
+    Start-Sleep -Milliseconds 500;
     Write-Host "$(Get-LogDate)`t        - Printer '$($Name)' er nu installeret." -ForegroundColor Yellow
     $ProgressPreference = "Continue"
 
@@ -277,10 +274,10 @@ if($NavisionPrinter){
 
     # Create startup task
     Write-Host "$(Get-LogDate)`t        - Sætter til at starte automatisk.." -ForegroundColor Yellow
-    Start-Sleep -S 3
+    Start-Sleep -Milliseconds 500
     while (!(Test-Path $shortcut)) { Start-Sleep -S 1 }
     Copy-Item $shortcut $startup  
     Write-Host "$(Get-LogDate)`t        - Navision printer er nu installeret." -f Green
-    Start-Sleep -S 3}
+    Start-Sleep -Milliseconds 500}
 
 <# End of Install-Printer function #>}
