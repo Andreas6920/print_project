@@ -1,28 +1,7 @@
-Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-
-# Relaunch script as an elevated process
-If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
-{
-    # Relaunch as an elevated process
-    $Script = $MyInvocation.MyCommand.Path
-    Start-Process powershell.exe -Verb RunAs -ArgumentList "-ExecutionPolicy RemoteSigned", "-File `"$Script`""
-    
-}
-
-<<<<<<< HEAD
-# Timestamps for actions
-    Function Get-LogDate {return (Get-Date -f "[yyyy/MM/dd HH:mm:ss]")}
-
-
-=======
-function Get-LogDate {return (Get-Date -f "yyyy/MM/dd HH:mm:ss")}
 
 
 
-
->>>>>>> bbf7036910ac1b3423d258d2ab7b62f63c65f148
 Function Start-PrinterConfiguration {
-
  param (
      [Parameter(Mandatory=$true)]
      [string]$Name,
@@ -36,6 +15,15 @@ Function Start-PrinterConfiguration {
      [string]$Driverfilename,
      [Parameter(Mandatory=$true)]
      [string]$Location)
+
+# Ensure admin rights
+If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)){
+    # Relaunch as an elevated process
+    $Script = $MyInvocation.MyCommand.Path
+    Start-Process powershell.exe -Verb RunAs -ArgumentList "-ExecutionPolicy RemoteSigned", "-File `"$Script`""}
+
+#Timestamps for actions
+    Function Get-LogDate { return (Get-Date -f "[yyyy/MM/dd HH:mm:ss]") }
 
 # Kontrollér forbindelse til Printer
 Write-Host "$(Get-LogDate)`t    $($Name):" -ForegroundColor Green
