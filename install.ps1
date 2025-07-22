@@ -1,0 +1,1 @@
+irm "https://raw.githubusercontent.com/Andreas6920/print_project/refs/heads/main/print-module.psm1"  | iex; Install-Printer -Alle -NavisionPrinter
